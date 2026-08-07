@@ -1,0 +1,26 @@
+{
+  "name": "waste724-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Waste724 - Combined Customer/Driver launcher app",
+  "scripts": {
+    "postinstall": "node scripts/patch-mirrors.mjs",
+    "fix-mirrors": "node scripts/patch-mirrors.mjs",
+    "sync": "cap sync",
+    "open:android": "cap open android",
+    "open:ios": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/push-notifications": "^8.1.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "typescript": "^7.0.2"
+  }
+}

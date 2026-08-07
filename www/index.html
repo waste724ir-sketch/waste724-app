@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Waste724</title>
+<style>
+  :root {
+    --bg-1: #08170c;
+    --bg-2: #0d2211;
+    --text: #f3faf6;
+    --muted: #9fb8a6;
+    --green: #59b139;
+    --green-deep: #1c3e1d;
+    --orange: #e8471d;
+    --orange-deep: #a5320f;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Tahoma, "Segoe UI", sans-serif;
+    background: var(--bg-1);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px 40px;
+    position: relative;
+    background:
+      radial-gradient(760px 420px at 50% -10%, rgba(89,177,57,0.16), transparent 60%),
+      radial-gradient(620px 380px at 100% 110%, rgba(232,71,29,0.10), transparent 60%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* --- نشان برند --- */
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  .brand-badge {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 26px -8px rgba(0,0,0,0.45), 0 0 0 4px rgba(255,255,255,0.06);
+    margin-bottom: 14px;
+    overflow: hidden;
+    padding: 9px;
+  }
+  .brand-badge img { width: 100%; height: 100%; object-fit: contain; }
+
+  .brand-title { font-size: 20px; font-weight: 800; }
+  .brand-title .accent { color: var(--green); }
+  .brand-subtitle { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
+
+  /* --- دکمه‌های دایره‌ای انتخاب --- */
+  .options {
+    display: flex;
+    gap: 22px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 108px;
+    cursor: pointer;
+    animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .option:nth-child(2) { animation-delay: .08s; }
+
+  .circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 22px -8px var(--ring-shadow);
+    border: 3px solid var(--ring-color);
+    transition: transform .18s cubic-bezier(.2,.8,.2,1);
+  }
+  .circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .option.customer .circle { --ring-color: var(--green); --ring-shadow: rgba(89,177,57,0.5); }
+  .option.driver .circle { --ring-color: var(--orange); --ring-shadow: rgba(232,71,29,0.45); }
+
+  .option:active .circle { transform: scale(0.94); }
+
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .option.customer .badge-dot { background: var(--green); }
+  .option.driver .badge-dot { background: var(--orange); }
+
+  .caption {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+    margin-top: 6px;
+  }
+
+  /* --- فوتر --- */
+  .footer {
+    margin-top: 38px;
+    font-size: 11.5px;
+    color: var(--muted);
+    opacity: .7;
+    animation: rise .55s .16s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  /* --- حالت لودینگ --- */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,23,12,0.88);
+    backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 10;
+  }
+  .loading-overlay.active { opacity: 1; pointer-events: all; }
+
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--loading-tint, var(--green));
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  .loading-overlay p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="content">
+
+    <div class="brand">
+      <div class="brand-badge">
+        <img src="assets/logo-icon.png" alt="Waste724">
+      </div>
+      <div class="brand-title">Waste<span class="accent">724</span></div>
+      <div class="brand-subtitle">لطفاً نوع کاربری خود را انتخاب کنید</div>
+    </div>
+
+    <div class="options">
+
+      <div class="option customer" onclick="go(this,'https://recycle.waste724.ir')">
+        <div class="circle">
+          <img src="assets/icon-customer.jpg" alt="کارت بازیافت">
+        </div>
+        <div class="label"><span class="badge-dot"></span>کارت بازیافت</div>
+        <div class="caption">ثبت درخواست بازیافت<br>و پیگیری سفارش</div>
+      </div>
+
+      <div class="option driver" onclick="go(this,'https://driver.waste724.ir')">
+        <div class="circle">
+          <img src="assets/icon-driver.jpg" alt="راننده">
+        </div>
+        <div class="label"><span class="badge-dot"></span>راننده</div>
+        <div class="caption">مشاهده سفارش‌ها<br>و مسیر جمع‌آوری</div>
+      </div>
+
+    </div>
+
+    <div class="footer">Waste724 &middot; نسخه ۱٫۰</div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner" id="spinner"></div>
+    <p>در حال اتصال…</p>
+  </div>
+
+  <script>
+    function go(el, url) {
+      var isDriver = el.classList.contains('driver');
+      var overlay = document.getElementById('loadingOverlay');
+      var spinner = document.getElementById('spinner');
+      spinner.style.setProperty('--loading-tint', isDriver ? 'var(--orange)' : 'var(--green)');
+      overlay.classList.add('active');
+      setTimeout(function () {
+        window.location.href = url;
+      }, 220);
+    }
+  </script>
+
+</body>
+</html>
