@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
+  "linkUrl": "",
+  "alt": "Waste724",
+
+  "backgroundEnabled": false,
+  "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg"
+}
