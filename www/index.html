@@ -16,6 +16,17 @@
     --orange-deep: #a5320f;
   }
 
+  /* حالت تم روشن: وقتی پس‌زمینه‌ی سفید/روشن فعال باشد، این کلاس روی body
+     اضافه می‌شود و رنگ متن‌ها را برای خوانایی بهتر تیره می‌کند */
+  body.light-theme {
+    --text: #16321d;
+    --muted: #4d6355;
+  }
+  body.light-theme .brand-badge {
+    box-shadow: 0 10px 26px -8px rgba(0,0,0,0.18), 0 0 0 4px rgba(0,0,0,0.04);
+  }
+  body.light-theme .footer { opacity: .55; }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
@@ -285,18 +296,22 @@
           }
 
           // --- پس‌زمینه‌ی کل صفحه (اختیاری) ---
-          // اگر backgroundImageUrl در فایل تنظیمات پر شده باشد، به‌جای گرادینت
-          // پیش‌فرض، همان تصویر به‌عنوان پس‌زمینه‌ی صفحه نمایش داده می‌شود.
           if (cfg.backgroundEnabled === true && cfg.backgroundImageUrl) {
             var bgUrl = cfg.backgroundImageUrl +
               (cfg.backgroundImageUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
+            var isLight = cfg.backgroundTheme === 'light';
             var preload = new Image();
             preload.onload = function () {
-              document.body.style.backgroundImage =
-                'linear-gradient(rgba(8,23,12,0.72), rgba(8,23,12,0.82)), url("' + bgUrl + '")';
+              var overlay = isLight
+                ? 'linear-gradient(rgba(255,255,255,0.62), rgba(255,255,255,0.7))'
+                : 'linear-gradient(rgba(8,23,12,0.72), rgba(8,23,12,0.82))';
+              document.body.style.backgroundImage = overlay + ', url("' + bgUrl + '")';
               document.body.style.backgroundSize = 'cover';
               document.body.style.backgroundPosition = 'center';
               document.body.style.backgroundRepeat = 'no-repeat';
+              if (isLight) {
+                document.body.classList.add('light-theme');
+              }
             };
             preload.src = bgUrl;
           }

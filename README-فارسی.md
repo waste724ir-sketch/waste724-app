@@ -140,11 +140,24 @@ git push -u origin main
      "alt": "Waste724",
 
      "backgroundEnabled": true,
-     "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg"
+     "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
+     "backgroundTheme": "light"
    }
    ```
 ۴. چند دقیقه صبر کن، بار بعد که اپ رو باز کنی، پس‌زمینه‌ی جدید (با یک لایه‌ی
-   تیره‌ی نیمه‌شفاف روش، تا متن‌ها خوانا بمونن) نمایش داده می‌شه
+   نیمه‌شفاف روش، تا متن‌ها خوانا بمونن) نمایش داده می‌شه
+
+### روشن یا تیره بودن پس‌زمینه (`backgroundTheme`)
+
+- `"backgroundTheme": "light"` → مناسب عکس‌های روشن/سفید؛ متن‌ها خودکار
+  **تیره** می‌شن تا روی پس‌زمینه‌ی روشن خوانا بمونن (لایه‌ی سفید نیمه‌شفاف
+  روی عکس می‌افته)
+- `"backgroundTheme": "dark"` (یا اصلاً ننویسیش) → مناسب عکس‌های تیره؛ متن‌ها
+  همون **سفید** پیش‌فرض می‌مونن (لایه‌ی سبز تیره‌ی نیمه‌شفاف روی عکس می‌افته)
+
+اگه عکست روشنه ولی فراموش کنی `backgroundTheme` رو `light` بذاری، متن‌های
+سفید روی پس‌زمینه‌ی روشن خوانا نمی‌مونن — حتماً این تنظیم رو با روشنی/تیرگی
+عکست هماهنگ کن.
 
 برای برگردوندن به گرادینت پیش‌فرض، فقط `backgroundEnabled` رو دوباره
 `false` کن.
