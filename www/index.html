@@ -14,6 +14,8 @@
     --green-deep: #1c3e1d;
     --orange: #e8471d;
     --orange-deep: #a5320f;
+    --blue: #3b82f6;
+    --blue-deep: #1d4ed8;
   }
 
   /* حالت تم روشن: وقتی پس‌زمینه‌ی سفید/روشن فعال باشد، این کلاس روی body
@@ -130,6 +132,15 @@
 
   .option.customer .circle { --ring-color: var(--green); --ring-shadow: rgba(89,177,57,0.5); }
   .option.driver .circle { --ring-color: var(--orange); --ring-shadow: rgba(232,71,29,0.45); }
+  .option.ops .circle { --ring-color: var(--blue); --ring-shadow: rgba(59,130,246,0.45); }
+
+  .circle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(150deg, var(--ring-color), var(--blue-deep));
+  }
+  .circle-icon svg { width: 40%; height: 40%; }
 
   .option:active .circle { transform: scale(0.94); }
 
@@ -149,6 +160,7 @@
   }
   .option.customer .badge-dot { background: var(--green); }
   .option.driver .badge-dot { background: var(--orange); }
+  .option.ops .badge-dot { background: var(--blue); }
 
   .caption {
     font-size: 11px;
@@ -234,14 +246,6 @@
         <div class="caption">ثبت درخواست بازیافت<br>و پیگیری سفارش</div>
       </div>
 
-      <div class="option driver" onclick="go(this,'https://driver.waste724.ir')">
-        <div class="circle">
-          <img src="assets/icon-driver.jpg" alt="راننده">
-        </div>
-        <div class="label"><span class="badge-dot"></span>راننده</div>
-        <div class="caption">مشاهده سفارش‌ها<br>و مسیر جمع‌آوری</div>
-      </div>
-
     </div>
 
     <div class="footer">Waste724 &middot; نسخه ۱٫۰</div>
@@ -254,10 +258,12 @@
 
   <script>
     function go(el, url) {
-      var isDriver = el.classList.contains('driver');
+      var tint = 'var(--green)';
+      if (el.classList.contains('driver')) tint = 'var(--orange)';
+      else if (el.classList.contains('ops')) tint = 'var(--blue)';
       var overlay = document.getElementById('loadingOverlay');
       var spinner = document.getElementById('spinner');
-      spinner.style.setProperty('--loading-tint', isDriver ? 'var(--orange)' : 'var(--green)');
+      spinner.style.setProperty('--loading-tint', tint);
       overlay.classList.add('active');
       setTimeout(function () {
         window.location.href = url;

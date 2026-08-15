@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل مدیریت | Waste724</title>
+<style>
+  :root{
+    --green:#59b139; --green-deep:#1c3e1d; --orange:#e8471d;
+    --bg:#f4f7f5; --surface:#ffffff; --border:#e2e8e4; --text:#16321d; --muted:#5b6f61;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:Tahoma,"Segoe UI",sans-serif; background:var(--bg); color:var(--text);
+    margin:0; padding:24px 16px 60px; direction:rtl;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+  h1{font-size:20px;margin:0 0 4px;}
+  .subtitle{color:var(--muted);font-size:13px;margin-bottom:24px;}
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:22px; margin-bottom:18px; box-shadow:0 2px 10px rgba(0,0,0,0.03);
+  }
+  .card h2{font-size:15px;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=password], select{
+    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px;
+    font-family:inherit; font-size:14px; background:#fff;
+  }
+  input[type=file]{width:100%;font-size:13px;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+  .toggle-row label{margin:0;font-size:14px;color:var(--text);}
+  .preview{width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--border);}
+  button{
+    width:100%; padding:13px; border:none; border-radius:12px; font-size:15px; font-weight:bold;
+    cursor:pointer; margin-top:8px;
+  }
+  .btn-primary{background:var(--green);color:#fff;}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-secondary{background:#eef1ee;color:var(--text);}
+  .msg{font-size:13px;margin-top:10px;padding:10px 12px;border-radius:8px;display:none;}
+  .msg.ok{background:#e8f7ea;color:#1c3e1d;display:block;}
+  .msg.err{background:#fdeceb;color:#a5320f;display:block;}
+  .hint{font-size:12px;color:var(--muted);line-height:1.8;margin-top:6px;}
+  .hidden{display:none !important;}
+  a{color:var(--green);}
+  .spinner{
+    width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;display:inline-block;vertical-align:middle;margin-left:8px;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- صفحه‌ی ورود -->
+  <div id="loginScreen">
+    <h1>ورود به پنل مدیریت Waste724</h1>
+    <div class="subtitle">برای عوض‌کردن بنر، پس‌زمینه و تنظیمات اپ</div>
+    <div class="card">
+      <label>توکن دسترسی گیت‌هاب (GitHub Token)</label>
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="hint">
+        این توکن فقط یک‌بار لازمه بسازی و همیشه همینو استفاده کن. اگه هنوز
+        نساختی، پایین صفحه راهنمای ساختش هست. توکن فقط توی همین مرورگر
+        (روی همین گوشی/کامپیوتر) ذخیره می‌شه، جای دیگه‌ای فرستاده نمی‌شه.
+      </div>
+      <button class="btn-primary" id="loginBtn" style="margin-top:16px;">ورود</button>
+      <div class="msg" id="loginMsg"></div>
+    </div>
+
+    <div class="card" style="font-size:13px;color:var(--muted);line-height:2;">
+      <b style="color:var(--text);">راهنمای ساخت توکن (فقط یک‌بار لازمه):</b><br>
+      ۱. برو به
+      <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+      ۲. توی Note بنویس: <code>waste724-panel</code><br>
+      ۳. Expiration رو روی <code>No expiration</code> بذار (یا هرچقدر خواستی)<br>
+      ۴. زیر Select scopes، فقط تیک <code>repo</code> رو بزن<br>
+      ۵. پایین صفحه <b>Generate token</b> رو بزن<br>
+      ۶. توکنی که نشون می‌ده (با <code>ghp_</code> شروع می‌شه) رو کپی کن و همینجا بالا پیست کن
+      <br><br>
+      ⚠️ این توکن مثل رمز عبوره؛ برای کس دیگه‌ای نفرستش.
+    </div>
+  </div>
+
+  <!-- پنل اصلی -->
+  <div id="panelScreen" class="hidden">
+    <h1>پنل مدیریت Waste724</h1>
+    <div class="subtitle">تغییرات ظرف چند دقیقه توی اپ اعمال می‌شه</div>
+
+    <div class="card">
+      <h2>🖼️ بنر بالای صفحه</h2>
+      <div class="toggle-row">
+        <label for="bannerEnabled">نمایش بنر</label>
+        <input type="checkbox" id="bannerEnabled">
+      </div>
+      <label>عکس بنر جدید (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
+      <input type="file" id="bannerFile" accept="image/*">
+      <img id="bannerPreview" class="preview">
+      <label>لینک بنر (اختیاری — با لمس بنر کاربر به این آدرس می‌ره)</label>
+      <input type="text" id="bannerLink" placeholder="https://recycle.waste724.ir/promo">
+    </div>
+
+    <div class="card">
+      <h2>🎨 پس‌زمینه‌ی صفحه‌ی اول</h2>
+      <div class="toggle-row">
+        <label for="bgEnabled">نمایش پس‌زمینه‌ی سفارشی</label>
+        <input type="checkbox" id="bgEnabled">
+      </div>
+      <label>تم پس‌زمینه</label>
+      <select id="bgTheme">
+        <option value="dark">تیره (برای عکس‌های تیره — متن سفید می‌مونه)</option>
+        <option value="light">روشن (برای عکس‌های روشن/سفید — متن تیره می‌شه)</option>
+      </select>
+      <label>عکس پس‌زمینه‌ی جدید (اختیاری)</label>
+      <input type="file" id="bgFile" accept="image/*">
+      <img id="bgPreview" class="preview">
+    </div>
+
+    <button class="btn-primary" id="saveBtn">ذخیره‌ی تغییرات</button>
+    <button class="btn-secondary" id="logoutBtn">خروج از پنل</button>
+    <div class="msg" id="saveMsg"></div>
+  </div>
+
+</div>
+
+<script>
+  const OWNER = 'waste724ir-sketch';
+  const REPO  = 'waste724-app';
+  const BRANCH = 'main';
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}/contents`;
+
+  const $ = (id) => document.getElementById(id);
+  let token = localStorage.getItem('w724_token') || '';
+
+  function ghHeaders() {
+    return {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json'
+    };
+  }
+
+  async function ghGetFile(path) {
+    const res = await fetch(`${API}/${path}?ref=${BRANCH}&t=${Date.now()}`, { headers: ghHeaders() });
+    if (!res.ok) throw new Error('خطا در خواندن ' + path + ' (کد ' + res.status + ')');
+    return res.json(); // { content (base64), sha, ... }
+  }
+
+  async function ghPutFile(path, base64Content, sha, message) {
+    const body = { message, content: base64Content, branch: BRANCH };
+    if (sha) body.sha = sha;
+    const res = await fetch(`${API}/${path}`, {
+      method: 'PUT',
+      headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('خطا در ذخیره‌ی ' + path + ': ' + errText);
+    }
+    return res.json();
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = 'msg ' + (ok ? 'ok' : 'err');
+  }
+
+  // --- ورود ---
+  async function tryLogin() {
+    const t = $('tokenInput').value.trim();
+    if (!t) { showMsg($('loginMsg'), 'توکن رو وارد کن.', false); return; }
+    token = t;
+    $('loginBtn').disabled = true;
+    $('loginBtn').innerHTML = 'در حال بررسی... <span class="spinner"></span>';
+    try {
+      const cfg = await ghGetFile('banner-config.json');
+      const data = JSON.parse(decodeURIComponent(escape(atob(cfg.content))));
+      localStorage.setItem('w724_token', token);
+      fillForm(data);
+      $('loginScreen').classList.add('hidden');
+      $('panelScreen').classList.remove('hidden');
+    } catch (e) {
+      showMsg($('loginMsg'), 'توکن اشتباهه یا دسترسی نداره. متن خطا: ' + e.message, false);
+    } finally {
+      $('loginBtn').disabled = false;
+      $('loginBtn').textContent = 'ورود';
+    }
+  }
+
+  function fillForm(cfg) {
+    $('bannerEnabled').checked = !!cfg.enabled;
+    $('bannerLink').value = cfg.linkUrl || '';
+    $('bgEnabled').checked = !!cfg.backgroundEnabled;
+    $('bgTheme').value = cfg.backgroundTheme === 'light' ? 'light' : 'dark';
+  }
+
+  function previewFile(inputId, imgId) {
+    const input = $(inputId);
+    const img = $(imgId);
+    input.addEventListener('change', () => {
+      if (input.files && input.files[0]) {
+        img.src = URL.createObjectURL(input.files[0]);
+        img.style.display = 'block';
+      }
+    });
+  }
+  previewFile('bannerFile', 'bannerPreview');
+  previewFile('bgFile', 'bgPreview');
+
+  // --- ذخیره ---
+  async function saveChanges() {
+    const saveBtn = $('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = 'در حال ذخیره... <span class="spinner"></span>';
+    try {
+      // آپلود عکس بنر در صورت انتخاب
+      if ($('bannerFile').files[0]) {
+        const b64 = await fileToBase64($('bannerFile').files[0]);
+        let sha = null;
+        try { sha = (await ghGetFile('banner.jpg')).sha; } catch(e) {}
+        await ghPutFile('banner.jpg', b64, sha, 'Update banner image via panel');
+      }
+      // آپلود عکس پس‌زمینه در صورت انتخاب
+      if ($('bgFile').files[0]) {
+        const b64 = await fileToBase64($('bgFile').files[0]);
+        let sha = null;
+        try { sha = (await ghGetFile('background.jpg')).sha; } catch(e) {}
+        await ghPutFile('background.jpg', b64, sha, 'Update background image via panel');
+      }
+
+      // به‌روزرسانی فایل تنظیمات
+      const current = await ghGetFile('banner-config.json');
+      const newConfig = {
+        enabled: $('bannerEnabled').checked,
+        imageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/banner.jpg`,
+        linkUrl: $('bannerLink').value.trim(),
+        alt: 'Waste724',
+        backgroundEnabled: $('bgEnabled').checked,
+        backgroundImageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/background.jpg`,
+        backgroundTheme: $('bgTheme').value
+      };
+      const b64Config = btoa(unescape(encodeURIComponent(JSON.stringify(newConfig, null, 2))));
+      await ghPutFile('banner-config.json', b64Config, current.sha, 'Update app config via panel');
+
+      showMsg($('saveMsg'), '✅ ذخیره شد! ظرف چند دقیقه توی اپ اعمال می‌شه.', true);
+    } catch (e) {
+      showMsg($('saveMsg'), '❌ خطا: ' + e.message, false);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'ذخیره‌ی تغییرات';
+    }
+  }
+
+  $('loginBtn').addEventListener('click', tryLogin);
+  $('tokenInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+  $('saveBtn').addEventListener('click', saveChanges);
+  $('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('w724_token');
+    token = '';
+    $('panelScreen').classList.add('hidden');
+    $('loginScreen').classList.remove('hidden');
+  });
+
+  // ورود خودکار اگه توکن قبلاً ذخیره شده
+  if (token) {
+    $('tokenInput').value = token;
+    tryLogin();
+  }
+</script>
+</body>
+</html>

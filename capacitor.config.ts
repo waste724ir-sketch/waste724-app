@@ -11,7 +11,6 @@ const config: CapacitorConfig = {
     cleartext: false,
     allowNavigation: [
       'recycle.waste724.ir',
-      'driver.waste724.ir',
       '*.waste724.ir'
     ]
   },
