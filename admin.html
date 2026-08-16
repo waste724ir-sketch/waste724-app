@@ -29,6 +29,7 @@
     font-family:inherit; font-size:14px; background:#fff;
   }
   input[type=file]{width:100%;font-size:13px;}
+  input[type=color]{width:100%;border:1px solid var(--border);border-radius:10px;cursor:pointer;}
   .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
   .toggle-row label{margin:0;font-size:14px;color:var(--text);}
   .preview{width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--border);}
@@ -120,6 +121,35 @@
       <img id="bgPreview" class="preview">
     </div>
 
+    <div class="card">
+      <h2>🎨 لوگو، رنگ و متن‌های اپ</h2>
+
+      <label>لوگوی جدید (اختیاری — دایره‌ی سفید بالای صفحه)</label>
+      <input type="file" id="logoFile" accept="image/*">
+      <img id="logoPreview" class="preview" style="max-height:90px;object-fit:contain;background:#fff;">
+
+      <label>رنگ اصلی</label>
+      <input type="color" id="primaryColor" value="#59b139" style="height:44px;padding:4px;">
+
+      <label>رنگ اصلی (سایه‌ی تیره‌تر)</label>
+      <input type="color" id="primaryColorDeep" value="#1c3e1d" style="height:44px;padding:4px;">
+
+      <label>عنوان اصلی</label>
+      <input type="text" id="brandTitle" placeholder="Waste724">
+
+      <label>زیرنویس زیر عنوان</label>
+      <input type="text" id="brandSubtitle" placeholder="لطفاً نوع کاربری خود را انتخاب کنید">
+
+      <label>برچسب دکمه</label>
+      <input type="text" id="optionLabel" placeholder="شهروند">
+
+      <label>توضیح زیر دکمه</label>
+      <input type="text" id="optionCaption" placeholder="ثبت درخواست بازیافت و پیگیری سفارش">
+
+      <label>متن پایین صفحه (فوتر)</label>
+      <input type="text" id="footerText" placeholder="Waste724 · نسخه ۱٫۲">
+    </div>
+
     <button class="btn-primary" id="saveBtn">ذخیره‌ی تغییرات</button>
     <button class="btn-secondary" id="logoutBtn">خروج از پنل</button>
     <div class="msg" id="saveMsg"></div>
@@ -205,6 +235,15 @@
     $('bannerLink').value = cfg.linkUrl || '';
     $('bgEnabled').checked = !!cfg.backgroundEnabled;
     $('bgTheme').value = cfg.backgroundTheme === 'light' ? 'light' : 'dark';
+
+    var a = cfg.app || {};
+    $('primaryColor').value = a.primaryColor || '#59b139';
+    $('primaryColorDeep').value = a.primaryColorDeep || '#1c3e1d';
+    $('brandTitle').value = a.brandTitle || '';
+    $('brandSubtitle').value = a.brandSubtitle || '';
+    $('optionLabel').value = a.optionLabel || '';
+    $('optionCaption').value = a.optionCaption || '';
+    $('footerText').value = a.footerText || '';
   }
 
   function previewFile(inputId, imgId) {
@@ -219,6 +258,7 @@
   }
   previewFile('bannerFile', 'bannerPreview');
   previewFile('bgFile', 'bgPreview');
+  previewFile('logoFile', 'logoPreview');
 
   // --- ذخیره ---
   async function saveChanges() {
@@ -240,6 +280,22 @@
         try { sha = (await ghGetFile('background.jpg')).sha; } catch(e) {}
         await ghPutFile('background.jpg', b64, sha, 'Update background image via panel');
       }
+      // آپلود لوگوی جدید در صورت انتخاب
+      let logoUrl = '';
+      if ($('logoFile').files[0]) {
+        const b64 = await fileToBase64($('logoFile').files[0]);
+        let sha = null;
+        try { sha = (await ghGetFile('custom-logo.png')).sha; } catch(e) {}
+        await ghPutFile('custom-logo.png', b64, sha, 'Update logo via panel');
+        logoUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/custom-logo.png`;
+      } else {
+        // اگه قبلاً لوگوی سفارشی آپلود شده، همون آدرس رو نگه دار
+        try {
+          const current = await ghGetFile('banner-config.json');
+          const currentCfg = JSON.parse(decodeURIComponent(escape(atob(current.content))));
+          logoUrl = (currentCfg.app && currentCfg.app.logoUrl) || '';
+        } catch(e) {}
+      }
 
       // به‌روزرسانی فایل تنظیمات
       const current = await ghGetFile('banner-config.json');
@@ -250,7 +306,17 @@
         alt: 'Waste724',
         backgroundEnabled: $('bgEnabled').checked,
         backgroundImageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/background.jpg`,
-        backgroundTheme: $('bgTheme').value
+        backgroundTheme: $('bgTheme').value,
+        app: {
+          logoUrl: logoUrl,
+          primaryColor: $('primaryColor').value,
+          primaryColorDeep: $('primaryColorDeep').value,
+          brandTitle: $('brandTitle').value.trim(),
+          brandSubtitle: $('brandSubtitle').value.trim(),
+          optionLabel: $('optionLabel').value.trim(),
+          optionCaption: $('optionCaption').value.trim(),
+          footerText: $('footerText').value.trim()
+        }
       };
       const b64Config = btoa(unescape(encodeURIComponent(JSON.stringify(newConfig, null, 2))));
       await ghPutFile('banner-config.json', b64Config, current.sha, 'Update app config via panel');

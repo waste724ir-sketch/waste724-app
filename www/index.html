@@ -116,7 +116,6 @@
     cursor: pointer;
     animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
   }
-  .option:nth-child(2) { animation-delay: .08s; }
 
   .circle {
     width: 96px;
@@ -224,10 +223,10 @@
 
     <div class="brand">
       <div class="brand-badge">
-        <img src="assets/logo-icon.png" alt="Waste724">
+        <img id="logoImg" src="assets/logo-icon.png" alt="Waste724">
       </div>
-      <div class="brand-title">Waste<span class="accent">724</span></div>
-      <div class="brand-subtitle">لطفاً نوع کاربری خود را انتخاب کنید</div>
+      <div class="brand-title" id="brandTitle">Waste<span class="accent">724</span></div>
+      <div class="brand-subtitle" id="brandSubtitle">لطفاً نوع کاربری خود را انتخاب کنید</div>
     </div>
 
     <!-- بنر تبلیغاتی/اطلاع‌رسانی -- به‌صورت خودکار از گیت‌هاب خوانده می‌شود
@@ -242,13 +241,13 @@
         <div class="circle">
           <img src="assets/icon-customer.jpg" alt="شهروند">
         </div>
-        <div class="label"><span class="badge-dot"></span>شهروند</div>
-        <div class="caption">ثبت درخواست بازیافت<br>و پیگیری سفارش</div>
+        <div class="label"><span class="badge-dot"></span><span id="optionLabel">شهروند</span></div>
+        <div class="caption" id="optionCaption">ثبت درخواست بازیافت<br>و پیگیری سفارش</div>
       </div>
 
     </div>
 
-    <div class="footer">Waste724 &middot; نسخه ۱٫2</div>
+    <div class="footer" id="footerText">Waste724 &middot; نسخه ۱٫۲</div>
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">
@@ -270,11 +269,11 @@
       }, 220);
     }
 
-    // --- بنر قابل مدیریت از گیت‌هاب (بدون نیاز به ساخت مجدد اپ) ---
-    // برای عوض کردن بنر، کافیست در همین ریپوی گیت‌هاب فایل banner-config.json
-    // و/یا تصویر banner.jpg را جایگزین کنید. اپ هر بار که باز می‌شود این فایل
-    // را می‌خواند. اگر غیرفعال یا در دسترس نبود، این بخش بی‌صدا نادیده گرفته می‌شود.
-    (function loadBanner() {
+    // --- بنر / پس‌زمینه / سفارشی‌سازی ظاهر، قابل مدیریت از گیت‌هاب (بدون نیاز به ساخت مجدد اپ) ---
+    // برای عوض کردن هرکدام، در همین ریپوی گیت‌هاب فایل banner-config.json و
+    // فایل‌های تصویر مرتبط را جایگزین کنید. اپ هر بار که باز می‌شود این فایل
+    // را می‌خواند. اگر غیرفعال یا در دسترس نبود، این بخش‌ها بی‌صدا نادیده گرفته می‌شوند.
+    (function loadRemoteConfig() {
       var CONFIG_URL =
         'https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-config.json?t=' +
         Date.now(); // پارامتر t فقط برای دور زدن کش مرورگر/CDN است
@@ -286,6 +285,35 @@
         })
         .then(function (cfg) {
           if (!cfg) return;
+
+          // --- سفارشی‌سازی لوگو، رنگ و متن‌های صفحه ---
+          if (cfg.app) {
+            var a = cfg.app;
+            if (a.logoUrl) {
+              document.getElementById('logoImg').src = a.logoUrl + (a.logoUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
+            }
+            if (a.primaryColor) {
+              document.documentElement.style.setProperty('--green', a.primaryColor);
+            }
+            if (a.primaryColorDeep) {
+              document.documentElement.style.setProperty('--green-deep', a.primaryColorDeep);
+            }
+            if (a.brandTitle) {
+              document.getElementById('brandTitle').textContent = a.brandTitle;
+            }
+            if (a.brandSubtitle) {
+              document.getElementById('brandSubtitle').textContent = a.brandSubtitle;
+            }
+            if (a.optionLabel) {
+              document.getElementById('optionLabel').textContent = a.optionLabel;
+            }
+            if (a.optionCaption) {
+              document.getElementById('optionCaption').textContent = a.optionCaption;
+            }
+            if (a.footerText) {
+              document.getElementById('footerText').textContent = a.footerText;
+            }
+          }
 
           // --- بنر ---
           if (cfg.enabled === true && cfg.imageUrl) {
@@ -323,7 +351,7 @@
           }
         })
         .catch(function () {
-          // بی‌سروصدا نادیده گرفته می‌شود؛ نبود بنر/پس‌زمینه نباید در کارکرد اپ اختلال ایجاد کند
+          // بی‌سروصدا نادیده گرفته می‌شود؛ نبود بنر/پس‌زمینه/تنظیمات نباید در کارکرد اپ اختلال ایجاد کند
         });
     })();
   </script>
