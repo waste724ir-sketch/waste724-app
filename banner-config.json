@@ -1,13 +1,15 @@
 {
   "enabled": true,
-  "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
-  "linkUrl": "",
+  "banners": [
+    {
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
+      "linkUrl": ""
+    }
+  ],
   "alt": "Waste724",
-
   "backgroundEnabled": true,
   "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
   "backgroundTheme": "light",
-
   "app": {
     "logoUrl": "",
     "primaryColor": "#59b139",
@@ -16,6 +18,6 @@
     "brandSubtitle": "لطفاً نوع کاربری خود را انتخاب کنید",
     "optionLabel": "شهروند",
     "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
-    "footerText": "Waste724 · نسخه ۱٫۲"
+    "footerText": "Waste724 · نسخه ۱٫4"
   }
 }
