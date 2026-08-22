@@ -93,16 +93,43 @@
     <div class="subtitle">تغییرات ظرف چند دقیقه توی اپ اعمال می‌شه</div>
 
     <div class="card">
-      <h2>🖼️ بنر بالای صفحه</h2>
+      <h2>🖼️ بنر بالای صفحه (اسلایدشو)</h2>
       <div class="toggle-row">
         <label for="bannerEnabled">نمایش بنر</label>
         <input type="checkbox" id="bannerEnabled">
       </div>
-      <label>عکس بنر جدید (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
-      <input type="file" id="bannerFile" accept="image/*">
-      <img id="bannerPreview" class="preview">
-      <label>لینک بنر (اختیاری — با لمس بنر کاربر به این آدرس می‌ره)</label>
-      <input type="text" id="bannerLink" placeholder="https://recycle.waste724.ir/promo">
+      <div class="hint" style="margin-bottom:10px;">
+        تا ۳ اسلاید می‌تونی بذاری؛ اگه بیشتر از یکی فعال باشه، خودکار هر
+        ۴ ثانیه بین‌شون می‌چرخه. برای هرکدوم که نمی‌خوای، فیلد عکس رو
+        خالی بذار.
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
+        <b style="font-size:13px;">اسلاید ۱</b>
+        <label>عکس (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
+        <input type="file" id="banner1File" accept="image/*">
+        <img id="banner1Preview" class="preview">
+        <label>لینک (اختیاری)</label>
+        <input type="text" id="banner1Link" placeholder="https://recycle.waste724.ir/promo">
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <b style="font-size:13px;">اسلاید ۲</b>
+        <label>عکس (اختیاری)</label>
+        <input type="file" id="banner2File" accept="image/*">
+        <img id="banner2Preview" class="preview">
+        <label>لینک (اختیاری)</label>
+        <input type="text" id="banner2Link" placeholder="">
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <b style="font-size:13px;">اسلاید ۳</b>
+        <label>عکس (اختیاری)</label>
+        <input type="file" id="banner3File" accept="image/*">
+        <img id="banner3Preview" class="preview">
+        <label>لینک (اختیاری)</label>
+        <input type="text" id="banner3Link" placeholder="">
+      </div>
     </div>
 
     <div class="card">
@@ -232,7 +259,19 @@
 
   function fillForm(cfg) {
     $('bannerEnabled').checked = !!cfg.enabled;
-    $('bannerLink').value = cfg.linkUrl || '';
+
+    // سازگاری با نسخه‌ی قدیمی (تک‌بنر) و نسخه‌ی جدید (آرایه‌ی banners)
+    var banners = Array.isArray(cfg.banners) ? cfg.banners : [];
+    if (banners.length === 0 && cfg.imageUrl) {
+      banners = [{ imageUrl: cfg.imageUrl, linkUrl: cfg.linkUrl || '' }];
+    }
+    $('banner1Link').value = (banners[0] && banners[0].linkUrl) || '';
+    $('banner2Link').value = (banners[1] && banners[1].linkUrl) || '';
+    $('banner3Link').value = (banners[2] && banners[2].linkUrl) || '';
+    if (banners[0] && banners[0].imageUrl) { $('banner1Preview').src = banners[0].imageUrl; $('banner1Preview').style.display = 'block'; }
+    if (banners[1] && banners[1].imageUrl) { $('banner2Preview').src = banners[1].imageUrl; $('banner2Preview').style.display = 'block'; }
+    if (banners[2] && banners[2].imageUrl) { $('banner3Preview').src = banners[2].imageUrl; $('banner3Preview').style.display = 'block'; }
+
     $('bgEnabled').checked = !!cfg.backgroundEnabled;
     $('bgTheme').value = cfg.backgroundTheme === 'light' ? 'light' : 'dark';
 
@@ -256,7 +295,9 @@
       }
     });
   }
-  previewFile('bannerFile', 'bannerPreview');
+  previewFile('banner1File', 'banner1Preview');
+  previewFile('banner2File', 'banner2Preview');
+  previewFile('banner3File', 'banner3Preview');
   previewFile('bgFile', 'bgPreview');
   previewFile('logoFile', 'logoPreview');
 
@@ -266,13 +307,38 @@
     saveBtn.disabled = true;
     saveBtn.innerHTML = 'در حال ذخیره... <span class="spinner"></span>';
     try {
-      // آپلود عکس بنر در صورت انتخاب
-      if ($('bannerFile').files[0]) {
-        const b64 = await fileToBase64($('bannerFile').files[0]);
-        let sha = null;
-        try { sha = (await ghGetFile('banner.jpg')).sha; } catch(e) {}
-        await ghPutFile('banner.jpg', b64, sha, 'Update banner image via panel');
+      // خواندن تنظیمات فعلی برای نگه‌داشتن آدرس اسلایدهایی که عکس جدید براشون انتخاب نشده
+      const current = await ghGetFile('banner-config.json');
+      const currentCfg = JSON.parse(decodeURIComponent(escape(atob(current.content))));
+      let currentBanners = Array.isArray(currentCfg.banners) ? currentCfg.banners : [];
+      if (currentBanners.length === 0 && currentCfg.imageUrl) {
+        currentBanners = [{ imageUrl: currentCfg.imageUrl, linkUrl: currentCfg.linkUrl || '' }];
       }
+
+      // آپلود هر کدام از ۳ اسلاید که عکس جدید براشون انتخاب شده
+      const slideFileNames = ['banner-slide-1.jpg', 'banner-slide-2.jpg', 'banner-slide-3.jpg'];
+      const slideInputs = ['banner1File', 'banner2File', 'banner3File'];
+      const slideLinkInputs = ['banner1Link', 'banner2Link', 'banner3Link'];
+      const newBanners = [];
+
+      for (let i = 0; i < 3; i++) {
+        const file = $(slideInputs[i]).files[0];
+        const linkVal = $(slideLinkInputs[i]).value.trim();
+        let imageUrl = (currentBanners[i] && currentBanners[i].imageUrl) || '';
+
+        if (file) {
+          const b64 = await fileToBase64(file);
+          let sha = null;
+          try { sha = (await ghGetFile(slideFileNames[i])).sha; } catch(e) {}
+          await ghPutFile(slideFileNames[i], b64, sha, `Update banner slide ${i+1} via panel`);
+          imageUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${slideFileNames[i]}`;
+        }
+
+        if (imageUrl) {
+          newBanners.push({ imageUrl: imageUrl, linkUrl: linkVal });
+        }
+      }
+
       // آپلود عکس پس‌زمینه در صورت انتخاب
       if ($('bgFile').files[0]) {
         const b64 = await fileToBase64($('bgFile').files[0]);
@@ -289,20 +355,13 @@
         await ghPutFile('custom-logo.png', b64, sha, 'Update logo via panel');
         logoUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/custom-logo.png`;
       } else {
-        // اگه قبلاً لوگوی سفارشی آپلود شده، همون آدرس رو نگه دار
-        try {
-          const current = await ghGetFile('banner-config.json');
-          const currentCfg = JSON.parse(decodeURIComponent(escape(atob(current.content))));
-          logoUrl = (currentCfg.app && currentCfg.app.logoUrl) || '';
-        } catch(e) {}
+        logoUrl = (currentCfg.app && currentCfg.app.logoUrl) || '';
       }
 
       // به‌روزرسانی فایل تنظیمات
-      const current = await ghGetFile('banner-config.json');
       const newConfig = {
         enabled: $('bannerEnabled').checked,
-        imageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/banner.jpg`,
-        linkUrl: $('bannerLink').value.trim(),
+        banners: newBanners,
         alt: 'Waste724',
         backgroundEnabled: $('bgEnabled').checked,
         backgroundImageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/background.jpg`,
