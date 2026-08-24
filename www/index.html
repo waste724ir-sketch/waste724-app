@@ -257,6 +257,12 @@
 
     </div>
 
+    <!-- بخش همکاران/اعتماد (بانک/بیمه و غیره) — قابل مدیریت از پنل، پیش‌فرض مخفی -->
+    <div id="partnersWrap" style="display:none;width:100%;margin-top:28px;text-align:center;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="partnersLabel">مورد اعتماد و همکاری با</div>
+      <div style="background:#fff;border-radius:16px;padding:14px 20px;display:inline-flex;align-items:center;gap:20px;box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);" id="partnersRow"></div>
+    </div>
+
     <div class="footer" id="footerText">Waste724 &middot; نسخه ۱٫۲</div>
   </div>
 
@@ -328,6 +334,25 @@
             }
             if (a.footerText) {
               document.getElementById('footerText').textContent = a.footerText;
+            }
+          }
+
+          // --- بخش همکاران/اعتماد (اختیاری) ---
+          if (cfg.partnersEnabled === true && Array.isArray(cfg.partners) && cfg.partners.length > 0) {
+            var partnersRow = document.getElementById('partnersRow');
+            cfg.partners.forEach(function (p) {
+              if (!p || !p.imageUrl) return;
+              var pImg = document.createElement('img');
+              pImg.src = p.imageUrl + (p.imageUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
+              pImg.alt = p.name || '';
+              pImg.style.cssText = 'height:40px;max-width:110px;object-fit:contain;';
+              partnersRow.appendChild(pImg);
+            });
+            if (partnersRow.children.length > 0) {
+              if (cfg.partnersLabel) {
+                document.getElementById('partnersLabel').textContent = cfg.partnersLabel;
+              }
+              document.getElementById('partnersWrap').style.display = 'block';
             }
           }
 

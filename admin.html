@@ -177,6 +177,43 @@
       <input type="text" id="footerText" placeholder="Waste724 · نسخه ۱٫۲">
     </div>
 
+    <div class="card">
+      <h2>🤝 همکاران / مورد اعتماد</h2>
+      <div class="toggle-row">
+        <label for="partnersEnabled">نمایش این بخش</label>
+        <input type="checkbox" id="partnersEnabled">
+      </div>
+      <label>عنوان بخش</label>
+      <input type="text" id="partnersLabel" placeholder="مورد اعتماد و همکاری با">
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
+        <b style="font-size:13px;">لوگوی همکار ۱</b>
+        <label>عکس (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
+        <input type="file" id="partner1File" accept="image/*">
+        <img id="partner1Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
+        <label>نام (برای دسترسی‌پذیری)</label>
+        <input type="text" id="partner1Name" placeholder="بانک شهر">
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <b style="font-size:13px;">لوگوی همکار ۲</b>
+        <label>عکس (اختیاری)</label>
+        <input type="file" id="partner2File" accept="image/*">
+        <img id="partner2Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
+        <label>نام</label>
+        <input type="text" id="partner2Name" placeholder="بیمه البرز">
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <b style="font-size:13px;">لوگوی همکار ۳</b>
+        <label>عکس (اختیاری)</label>
+        <input type="file" id="partner3File" accept="image/*">
+        <img id="partner3Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
+        <label>نام</label>
+        <input type="text" id="partner3Name" placeholder="">
+      </div>
+    </div>
+
     <button class="btn-primary" id="saveBtn">ذخیره‌ی تغییرات</button>
     <button class="btn-secondary" id="logoutBtn">خروج از پنل</button>
     <div class="msg" id="saveMsg"></div>
@@ -283,6 +320,16 @@
     $('optionLabel').value = a.optionLabel || '';
     $('optionCaption').value = a.optionCaption || '';
     $('footerText').value = a.footerText || '';
+
+    $('partnersEnabled').checked = !!cfg.partnersEnabled;
+    $('partnersLabel').value = cfg.partnersLabel || '';
+    var partners = Array.isArray(cfg.partners) ? cfg.partners : [];
+    $('partner1Name').value = (partners[0] && partners[0].name) || '';
+    $('partner2Name').value = (partners[1] && partners[1].name) || '';
+    $('partner3Name').value = (partners[2] && partners[2].name) || '';
+    if (partners[0] && partners[0].imageUrl) { $('partner1Preview').src = partners[0].imageUrl; $('partner1Preview').style.display = 'block'; }
+    if (partners[1] && partners[1].imageUrl) { $('partner2Preview').src = partners[1].imageUrl; $('partner2Preview').style.display = 'block'; }
+    if (partners[2] && partners[2].imageUrl) { $('partner3Preview').src = partners[2].imageUrl; $('partner3Preview').style.display = 'block'; }
   }
 
   function previewFile(inputId, imgId) {
@@ -300,6 +347,9 @@
   previewFile('banner3File', 'banner3Preview');
   previewFile('bgFile', 'bgPreview');
   previewFile('logoFile', 'logoPreview');
+  previewFile('partner1File', 'partner1Preview');
+  previewFile('partner2File', 'partner2Preview');
+  previewFile('partner3File', 'partner3Preview');
 
   // --- ذخیره ---
   async function saveChanges() {
@@ -358,6 +408,31 @@
         logoUrl = (currentCfg.app && currentCfg.app.logoUrl) || '';
       }
 
+      // آپلود لوگوهای همکاران (تا ۳ عدد)
+      const currentPartners = Array.isArray(currentCfg.partners) ? currentCfg.partners : [];
+      const partnerFileNames = ['partner-1.png', 'partner-2.png', 'partner-3.png'];
+      const partnerInputs = ['partner1File', 'partner2File', 'partner3File'];
+      const partnerNameInputs = ['partner1Name', 'partner2Name', 'partner3Name'];
+      const newPartners = [];
+
+      for (let i = 0; i < 3; i++) {
+        const file = $(partnerInputs[i]).files[0];
+        const nameVal = $(partnerNameInputs[i]).value.trim();
+        let imageUrl = (currentPartners[i] && currentPartners[i].imageUrl) || '';
+
+        if (file) {
+          const b64 = await fileToBase64(file);
+          let sha = null;
+          try { sha = (await ghGetFile(partnerFileNames[i])).sha; } catch(e) {}
+          await ghPutFile(partnerFileNames[i], b64, sha, `Update partner logo ${i+1} via panel`);
+          imageUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${partnerFileNames[i]}`;
+        }
+
+        if (imageUrl) {
+          newPartners.push({ imageUrl: imageUrl, name: nameVal });
+        }
+      }
+
       // به‌روزرسانی فایل تنظیمات
       const newConfig = {
         enabled: $('bannerEnabled').checked,
@@ -366,6 +441,9 @@
         backgroundEnabled: $('bgEnabled').checked,
         backgroundImageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/background.jpg`,
         backgroundTheme: $('bgTheme').value,
+        partnersEnabled: $('partnersEnabled').checked,
+        partnersLabel: $('partnersLabel').value.trim(),
+        partners: newPartners,
         app: {
           logoUrl: logoUrl,
           primaryColor: $('primaryColor').value,
