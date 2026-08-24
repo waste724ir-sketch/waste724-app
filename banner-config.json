@@ -18,6 +18,18 @@
   "backgroundEnabled": true,
   "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
   "backgroundTheme": "light",
+  "partnersEnabled": false,
+  "partnersLabel": "",
+  "partners": [
+    {
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-1.png",
+      "name": ""
+    },
+    {
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-2.png",
+      "name": ""
+    }
+  ],
   "app": {
     "logoUrl": "",
     "primaryColor": "#59b139",
