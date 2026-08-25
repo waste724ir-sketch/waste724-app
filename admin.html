@@ -167,11 +167,17 @@
       <label>زیرنویس زیر عنوان</label>
       <input type="text" id="brandSubtitle" placeholder="لطفاً نوع کاربری خود را انتخاب کنید">
 
-      <label>برچسب دکمه</label>
+      <label>برچسب دکمه (شهروند)</label>
       <input type="text" id="optionLabel" placeholder="شهروند">
 
-      <label>توضیح زیر دکمه</label>
+      <label>توضیح زیر دکمه (شهروند)</label>
       <input type="text" id="optionCaption" placeholder="ثبت درخواست بازیافت و پیگیری سفارش">
+
+      <label>برچسب دکمه (راننده)</label>
+      <input type="text" id="driverLabel" placeholder="راننده">
+
+      <label>توضیح زیر دکمه (راننده)</label>
+      <input type="text" id="driverCaption" placeholder="مشاهده سفارش‌ها و مسیر جمع‌آوری">
 
       <label>متن پایین صفحه (فوتر)</label>
       <input type="text" id="footerText" placeholder="Waste724 · نسخه ۱٫۲">
@@ -319,6 +325,8 @@
     $('brandSubtitle').value = a.brandSubtitle || '';
     $('optionLabel').value = a.optionLabel || '';
     $('optionCaption').value = a.optionCaption || '';
+    $('driverLabel').value = a.driverLabel || '';
+    $('driverCaption').value = a.driverCaption || '';
     $('footerText').value = a.footerText || '';
 
     $('partnersEnabled').checked = !!cfg.partnersEnabled;
@@ -452,6 +460,8 @@
           brandSubtitle: $('brandSubtitle').value.trim(),
           optionLabel: $('optionLabel').value.trim(),
           optionCaption: $('optionCaption').value.trim(),
+          driverLabel: $('driverLabel').value.trim(),
+          driverCaption: $('driverCaption').value.trim(),
           footerText: $('footerText').value.trim()
         }
       };
