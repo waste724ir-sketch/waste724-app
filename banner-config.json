@@ -38,6 +38,8 @@
     "brandSubtitle": "لطفاً نوع کاربری خود را انتخاب کنید",
     "optionLabel": "شهروند",
     "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
-    "footerText": "Waste724 · نسخه ۱٫4"
+    "driverLabel": "راننده",
+    "driverCaption": "مشاهده سفارش ها و مسیر جمع آوری",
+    "footerText": "Waste724 · نسخه 1٫5"
   }
 }
