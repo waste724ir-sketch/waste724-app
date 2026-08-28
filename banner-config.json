@@ -14,32 +14,25 @@
       "linkUrl": ""
     }
   ],
-  "alt": "Waste724",
-  "backgroundEnabled": true,
-  "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
-  "backgroundTheme": "light",
   "partnersEnabled": true,
-  "partnersLabel": "",
+  "partnersLabel": "مورد اعتماد و همکاری با",
   "partners": [
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-1.png",
-      "name": ""
+      "name": "بانک شهر"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-2.png",
-      "name": ""
+      "name": "بیمه البرز"
     }
   ],
   "app": {
-    "logoUrl": "",
-    "primaryColor": "#59b139",
-    "primaryColorDeep": "#1c3e1d",
     "brandTitle": "Waste724",
     "brandSubtitle": "لطفاً نوع کاربری خود را انتخاب کنید",
     "optionLabel": "شهروند",
     "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
     "driverLabel": "راننده",
-    "driverCaption": "مشاهده سفارش ها و مسیر جمع آوری",
-    "footerText": "Waste724 · نسخه 1٫5"
+    "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
+    "footerText": "Waste724 · نسخه ۱٫۴"
   }
 }
