@@ -2,7 +2,7 @@
   "enabled": true,
   "banners": [
     {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
       "linkUrl": ""
     },
     {
@@ -14,6 +14,10 @@
       "linkUrl": ""
     }
   ],
+  "alt": "Waste724",
+  "backgroundEnabled": false,
+  "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
+  "backgroundTheme": "dark",
   "partnersEnabled": true,
   "partnersLabel": "مورد اعتماد و همکاری با",
   "partners": [
@@ -27,6 +31,8 @@
     }
   ],
   "app": {
+    "primaryColor": "#59b139",
+    "primaryColorDeep": "#1c3e1d",
     "brandTitle": "Waste724",
     "brandSubtitle": "لطفاً نوع کاربری خود را انتخاب کنید",
     "optionLabel": "شهروند",
