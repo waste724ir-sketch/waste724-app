@@ -1,8 +1,9 @@
 {
   "enabled": true,
+  "bannerAspectRatio": "16/9",
   "banners": [
     {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
       "linkUrl": ""
     },
     {
@@ -12,12 +13,20 @@
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-3.jpg",
       "linkUrl": ""
+    },
+    {
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-4.jpg",
+      "linkUrl": ""
+    },
+    {
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-5.jpg",
+      "linkUrl": ""
     }
   ],
   "alt": "Waste724",
   "backgroundEnabled": true,
   "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
-  "backgroundTheme": "dark",
+  "backgroundTheme": "light",
   "partnersEnabled": true,
   "partnersLabel": "مورد اعتماد و همکاری با",
   "partners": [
@@ -31,6 +40,7 @@
     }
   ],
   "app": {
+    "logoUrl": "",
     "primaryColor": "#59b139",
     "primaryColorDeep": "#1c3e1d",
     "brandTitle": "Waste724",
@@ -39,6 +49,8 @@
     "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
     "driverLabel": "راننده",
     "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
-    "footerText": "Waste724 · نسخه ۱٫۴"
+    "footerText": "Waste724 · نسخه ۱٫۴",
+    "citizenImageUrl": "",
+    "driverImageUrl": ""
   }
 }
