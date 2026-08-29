@@ -49,7 +49,7 @@
     "driverLabel": "راننده",
     "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
     "footerText": "Waste724 · نسخه ۱٫۴",
-    "citizenImageUrl": "",
-    "driverImageUrl": ""
+    "citizenImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/citizen.png",
+    "driverImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/driver.png"
   }
 }
