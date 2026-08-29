@@ -3,7 +3,7 @@
   "bannerAspectRatio": "16/9",
   "banners": [
     {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
+      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
       "linkUrl": ""
     },
     {
@@ -40,6 +40,8 @@
     }
   ],
   "app": {
+    "logoUrl": "",
+    "alborzLogoUrl": "",
     "primaryColor": "#59b139",
     "primaryColorDeep": "#1c3e1d",
     "brandTitle": "Waste724",
@@ -49,7 +51,7 @@
     "driverLabel": "راننده",
     "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
     "footerText": "Waste724 · نسخه ۱٫۴",
-    "citizenImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/citizen.png",
-    "driverImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/driver.png"
+    "citizenImageUrl": "",
+    "driverImageUrl": ""
   }
 }
