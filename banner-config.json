@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "bannerAspectRatio": "16/9",
+  "bannerAspectRatio": "4/3",
   "banners": [
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
