@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "bannerAspectRatio": "4/3",
+  "bannerAspectRatio": "16/9",
   "banners": [
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
@@ -49,9 +49,9 @@
     "driverLabel": "راننده",
     "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
     "footerText": "Waste724 · نسخه ۱٫۴",
-    "logoUrl": "",
+    "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/waste724-logo.png",
     "alborzLogoUrl": "",
-    "citizenImageUrl": "",
-    "driverImageUrl": ""
+    "citizenImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/citizen.png",
+    "driverImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/driver.png"
   }
 }
