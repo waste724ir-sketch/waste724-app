@@ -17,18 +17,33 @@ import com.getcapacitor.BridgeActivity;
 /**
  * این اکتیویتی، رفتار پیش‌فرض Capacitor را دست‌نخورده نگه می‌دارد و فقط یک
  * دکمه‌ی شناور «بازگشت» روی WebView اضافه می‌کند. با لمس این دکمه، کاربر از
- * سایت مشتری یا راننده به صفحه‌ی محلی انتخاب (index.html) برمی‌گردد.
- * دکمه به‌صورت خودکار وقتی خود صفحه‌ی انتخاب باز است، مخفی می‌شود.
+ * سایت مشتری یا اپراتور به صفحه‌ی محلی انتخاب (index.html) برمی‌گردد.
+ * دکمه در صفحه‌ی انتخاب و همچنین در کل سایت راننده (driver.waste724.ir)
+ * به‌صورت خودکار مخفی می‌شود.
  */
 public class MainActivity extends BridgeActivity {
 
     // آدرس صفحه‌ی محلی انتخاب مشتری/راننده (همان webDir پروژه‌ی Capacitor)
     private static final String HOME_URL = "https://localhost/index.html";
 
+    // سایت راننده — دکمه‌ی بازگشت در این سایت نمایش داده نمی‌شود
+    private static final String DRIVER_HOST = "driver.waste724.ir";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addFloatingBackButton();
+    }
+
+    /** آیا این URL مربوط به سایت راننده است؟ */
+    private static boolean isDriverUrl(String url) {
+        if (url == null) return false;
+        try {
+            String host = android.net.Uri.parse(url).getHost();
+            return host != null && host.equalsIgnoreCase(DRIVER_HOST);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void addFloatingBackButton() {
@@ -57,7 +72,7 @@ public class MainActivity extends BridgeActivity {
         button.setOnClickListener(v -> {
             WebView webView = getBridge().getWebView();
             // به‌جای پرش مستقیم به صفحه‌ی انتخاب، ابتدا یک قدم در تاریخچه‌ی
-            // همان سایت (مشتری/راننده) به عقب برمی‌گردیم؛ وقتی تاریخچه تمام
+            // همان سایت (مشتری/اپراتور) به عقب برمی‌گردیم؛ وقتی تاریخچه تمام
             // شد (یعنی به اولین صفحه‌ی آن سایت رسیدیم)، به صفحه‌ی انتخاب می‌رویم.
             if (webView.canGoBack()) {
                 webView.goBack();
@@ -77,7 +92,9 @@ public class MainActivity extends BridgeActivity {
                         && (url.equals(HOME_URL)
                         || url.equals("https://localhost/")
                         || url.endsWith("/index.html"));
-                button.setVisibility(onSelector ? View.GONE : View.VISIBLE);
+                // در سایت راننده و در صفحه‌ی انتخاب، دکمه مخفی می‌شود
+                boolean showButton = !onSelector && !isDriverUrl(url);
+                button.setVisibility(showButton ? View.VISIBLE : View.GONE);
             }
         });
 
