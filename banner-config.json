@@ -48,9 +48,9 @@
     "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
     "driverLabel": "راننده",
     "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
-    "footerText": "Waste724 · نسخه 1.5.2",
+    "footerText": "Waste724 · نسخه 1.5.4",
     "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/waste724-logo.png",
-    "alborzLogoUrl": "",
+    "alborzLogoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/alborz-logo.png",
     "citizenImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/citizen.png",
     "driverImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/driver.png"
   }
