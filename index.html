@@ -151,6 +151,59 @@
   .status.info { background: #eef4fb; color: #1c5a8c; }
 
   .hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
+
+  /* --- ردیف‌های لیست بنر --- */
+  .banner-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #fbfdfb;
+  }
+  .banner-row .thumb-drop {
+    flex-shrink: 0;
+    width: 68px;
+    height: 52px;
+    border-radius: 8px;
+    border: 1.5px dashed #b9d3b5;
+    background: #fff center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .banner-row .thumb-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .banner-row .fields { flex: 1; min-width: 0; }
+  .banner-row .fields input {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 9px;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .banner-row .remove-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fdecea;
+    color: var(--danger);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .token-note {
     font-size: 11.5px;
     color: var(--muted);
@@ -259,20 +312,12 @@
 
       <!-- بنر -->
       <div class="card">
-        <div class="toggle-row">
-          <h2 style="margin:0">🖼️ بنر اسلایدر</h2>
-          <label class="switch"><input type="checkbox" id="bannerEnabled" onchange="renderPreview()"><span class="slider-el"></span></label>
-        </div>
-        <p class="card-desc">این تصویر به‌عنوان اسلاید دوم، بعد از عکس اصلی هدر، به اسلایدر بالای صفحه اضافه می‌شود.</p>
+        <h2 style="margin:0">🖼️ بنرهای اسلایدر</h2>
+        <p class="card-desc">هر بنری که اینجا اضافه کنی، به‌عنوان یک اسلاید جدید (بعد از عکس اصلی هدر) به اسلایدر بالای صفحه اضافه می‌شود. می‌توانی هرچند بنر که خواستی اضافه یا حذف کنی.</p>
 
-        <label class="first">تصویر بنر</label>
-        <div class="file-drop" id="bannerDrop">
-          📤 برای انتخاب عکس کلیک کنید (یا بکشید و رها کنید)
-          <input type="file" accept="image/*" id="bannerFile" onchange="handleFile(event,'banner')">
-          <img id="bannerPreviewImg" style="display:none">
-        </div>
-        <label>لینک مقصد در صورت لمس بنر (اختیاری)</label>
-        <input type="url" id="bannerLink" placeholder="https://...">
+        <div id="bannerList"></div>
+
+        <button class="btn-secondary" style="width:100%; margin-top:6px;" onclick="addBannerRow()">➕ افزودن بنر جدید</button>
       </div>
 
       <!-- لوگو -->
@@ -353,7 +398,9 @@
 </div>
 
 <script>
-  var uploads = { banner: null, logo: null }; // { base64, mime, name }
+  var uploads = { logo: null }; // { base64, mime, name }
+  var bannersList = []; // [{ id, file:{base64,mime}|null, existingUrl:string|null, linkUrl:string }]
+  var bannerIdSeq = 0;
 
   function apiBase() {
     var owner = document.getElementById('ghOwner').value.trim();
@@ -377,6 +424,11 @@
     el.className = 'status show ' + type;
     el.textContent = msg;
   }
+  function extFromMime(mime) {
+    if (mime === 'image/png') return 'png';
+    if (mime === 'image/webp') return 'webp';
+    return 'jpg';
+  }
 
   function handleFile(evt, kind) {
     var file = evt.target.files[0];
@@ -393,6 +445,74 @@
     reader.readAsDataURL(file);
   }
 
+  // --- مدیریت لیست بنرها ---
+  function addBannerRow(existing) {
+    bannersList.push({
+      id: ++bannerIdSeq,
+      file: null,
+      existingUrl: (existing && existing.imageUrl) || null,
+      linkUrl: (existing && existing.linkUrl) || ''
+    });
+    renderBannerList();
+  }
+
+  function removeBannerRow(id) {
+    bannersList = bannersList.filter(function (b) { return b.id !== id; });
+    renderBannerList();
+    renderPreview();
+  }
+
+  function bannerFileChange(id, evt) {
+    var file = evt.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base64 = reader.result.split(',')[1];
+      var item = bannersList.filter(function (b) { return b.id === id; })[0];
+      if (!item) return;
+      item.file = { base64: base64, mime: file.type };
+      item.previewDataUrl = reader.result;
+      renderBannerList();
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function bannerLinkChange(id, value) {
+    var item = bannersList.filter(function (b) { return b.id === id; })[0];
+    if (item) item.linkUrl = value;
+  }
+
+  function renderBannerList() {
+    var wrap = document.getElementById('bannerList');
+    wrap.innerHTML = '';
+    if (bannersList.length === 0) {
+      wrap.innerHTML = '<div class="hint">هنوز بنری اضافه نشده. با دکمه‌ی زیر شروع کن.</div>';
+      return;
+    }
+    bannersList.forEach(function (item, idx) {
+      var thumbUrl = (item.previewDataUrl) || item.existingUrl || '';
+      var row = document.createElement('div');
+      row.className = 'banner-row';
+      row.innerHTML =
+        '<div class="thumb-drop" style="' + (thumbUrl ? "background-image:url('" + thumbUrl + "')" : '') + '">' +
+          (thumbUrl ? '' : '📤 عکس') +
+          '<input type="file" accept="image/*">' +
+        '</div>' +
+        '<div class="fields">' +
+          '<input type="url" placeholder="لینک این بنر (اختیاری)" value="' + (item.linkUrl || '').replace(/"/g, '&quot;') + '">' +
+          '<div class="hint" style="margin-top:4px;">بنر شماره ' + (idx + 1) + '</div>' +
+        '</div>' +
+        '<div class="remove-btn">✕</div>';
+
+      row.querySelector('input[type=file]').addEventListener('change', function (e) { bannerFileChange(item.id, e); });
+      row.querySelector('input[type=url]').addEventListener('input', function (e) { bannerLinkChange(item.id, e.target.value); });
+      row.querySelector('.remove-btn').addEventListener('click', function () { removeBannerRow(item.id); });
+
+      wrap.appendChild(row);
+    });
+  }
+
   function renderPreview() {
     if (document.getElementById('headerVisible').checked) {
       document.getElementById('pvHeader').style.display = 'flex';
@@ -402,9 +522,10 @@
     if (document.getElementById('logoEnabled').checked && uploads.logo) {
       document.getElementById('pvLogo').src = 'data:' + uploads.logo.mime + ';base64,' + uploads.logo.base64;
     }
-    if (document.getElementById('bannerEnabled').checked && uploads.banner) {
-      document.getElementById('pvHero').style.backgroundImage =
-        "url('data:" + uploads.banner.mime + ';base64,' + uploads.banner.base64 + "')";
+    var firstBanner = bannersList[0];
+    if (firstBanner) {
+      var src = firstBanner.previewDataUrl || firstBanner.existingUrl;
+      if (src) document.getElementById('pvHero').style.backgroundImage = "url('" + src + "')";
     }
     var coopOn = document.getElementById('coopEnabled').checked;
     document.getElementById('pvCoop').className = 'pv-coop' + (coopOn ? ' show' : '');
@@ -424,8 +545,17 @@
       })
       .then(function (data) {
         var cfg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-        document.getElementById('bannerEnabled').checked = !!cfg.enabled;
-        document.getElementById('bannerLink').value = cfg.linkUrl || '';
+
+        bannersList = [];
+        if (Array.isArray(cfg.banners)) {
+          cfg.banners.forEach(function (b) { addBannerRow(b); });
+        } else if (cfg.enabled === true && cfg.imageUrl) {
+          // سازگاری با نسخه‌ی قدیمی (تک‌بنر)
+          addBannerRow({ imageUrl: cfg.imageUrl, linkUrl: cfg.linkUrl });
+        } else {
+          renderBannerList();
+        }
+
         document.getElementById('headerVisible').checked = cfg.headerVisible !== false;
         document.getElementById('logoEnabled').checked = !!cfg.logoEnabled;
         if (cfg.cooperate) {
@@ -472,6 +602,11 @@
     return btoa(unescape(encodeURIComponent(str)));
   }
 
+  function rawBaseUrl() {
+    return 'https://raw.githubusercontent.com/' + document.getElementById('ghOwner').value.trim() +
+      '/' + document.getElementById('ghRepo').value.trim() + '/' + document.getElementById('ghBranch').value.trim() + '/';
+  }
+
   // --- ذخیره کامل ---
   function saveAll() {
     var token = document.getElementById('ghToken').value.trim();
@@ -484,42 +619,43 @@
     showStatus('saveStatus', 'info', 'در حال ذخیره‌سازی...');
 
     var tasks = [];
-    var cfg = {
-      enabled: document.getElementById('bannerEnabled').checked,
-      imageUrl: 'https://raw.githubusercontent.com/' + document.getElementById('ghOwner').value.trim() +
-        '/' + document.getElementById('ghRepo').value.trim() + '/' + document.getElementById('ghBranch').value.trim() +
-        '/' + fullPath('banner.jpg'),
-      linkUrl: document.getElementById('bannerLink').value.trim(),
-      alt: 'Waste724',
+    var bannerResults = new Array(bannersList.length);
 
-      logoEnabled: document.getElementById('logoEnabled').checked,
-      logoUrl: 'https://raw.githubusercontent.com/' + document.getElementById('ghOwner').value.trim() +
-        '/' + document.getElementById('ghRepo').value.trim() + '/' + document.getElementById('ghBranch').value.trim() +
-        '/' + fullPath('logo.png'),
-      headerVisible: document.getElementById('headerVisible').checked,
+    bannersList.forEach(function (item, idx) {
+      if (item.file) {
+        var path = fullPath('banner-' + (idx + 1) + '.' + extFromMime(item.file.mime));
+        tasks.push(
+          putFile(path, item.file.base64, 'به‌روزرسانی بنر ' + (idx + 1) + ' از پنل مدیریت')
+            .then(function () { bannerResults[idx] = { imageUrl: rawBaseUrl() + path, linkUrl: item.linkUrl }; })
+        );
+      } else if (item.existingUrl) {
+        bannerResults[idx] = { imageUrl: item.existingUrl, linkUrl: item.linkUrl };
+      }
+    });
 
-      cooperate: {
-        enabled: document.getElementById('coopEnabled').checked,
-        title: document.getElementById('coopTitle').value.trim(),
-        desc: document.getElementById('coopDesc').value.trim(),
-        link: document.getElementById('coopLink').value.trim()
-      },
-
-      backgroundEnabled: false,
-      backgroundImageUrl: 'https://raw.githubusercontent.com/' + document.getElementById('ghOwner').value.trim() +
-        '/' + document.getElementById('ghRepo').value.trim() + '/' + document.getElementById('ghBranch').value.trim() +
-        '/' + fullPath('background.jpg')
-    };
-
-    if (uploads.banner) {
-      tasks.push(putFile(fullPath('banner.jpg'), uploads.banner.base64, 'به‌روزرسانی بنر از پنل مدیریت'));
-    }
     if (uploads.logo) {
       tasks.push(putFile(fullPath('logo.png'), uploads.logo.base64, 'به‌روزرسانی لوگو از پنل مدیریت'));
     }
 
     Promise.all(tasks)
       .then(function () {
+        var cfg = {
+          banners: bannerResults.filter(function (b) { return b; }),
+
+          logoEnabled: document.getElementById('logoEnabled').checked,
+          logoUrl: rawBaseUrl() + fullPath('logo.png'),
+          headerVisible: document.getElementById('headerVisible').checked,
+
+          cooperate: {
+            enabled: document.getElementById('coopEnabled').checked,
+            title: document.getElementById('coopTitle').value.trim(),
+            desc: document.getElementById('coopDesc').value.trim(),
+            link: document.getElementById('coopLink').value.trim()
+          },
+
+          backgroundEnabled: false,
+          backgroundImageUrl: rawBaseUrl() + fullPath('background.jpg')
+        };
         return putFile(fullPath('banner-config.json'), b64Utf8(JSON.stringify(cfg, null, 2)), 'به‌روزرسانی تنظیمات صفحه اول از پنل مدیریت');
       })
       .then(function () {
@@ -533,6 +669,7 @@
       });
   }
 
+  renderBannerList();
   renderPreview();
 </script>
 </body>
