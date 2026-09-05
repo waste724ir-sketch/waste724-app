@@ -25,7 +25,7 @@
   "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/logo.png",
   "headerVisible": true,
   "cooperate": {
-    "enabled": true,
+    "enabled": false,
     "title": "همکاری با ما",
     "desc": "شهرداری‌ یا کسب‌وکار هستید؟ برای همکاری با ما تماس بگیرید",
     "link": ""
