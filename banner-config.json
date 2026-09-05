@@ -1,6 +1,4 @@
 {
-  "enabled": true,
-  "bannerAspectRatio": "16/9",
   "banners": [
     {
       "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
@@ -23,35 +21,15 @@
       "linkUrl": ""
     }
   ],
-  "alt": "Waste724",
-  "backgroundEnabled": true,
-  "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg",
-  "backgroundTheme": "light",
-  "partnersEnabled": false,
-  "partnersLabel": "مورد اعتماد و همکاری با",
-  "partners": [
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-1.png",
-      "name": "بانک شهر"
-    },
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/partner-2.png",
-      "name": "بیمه البرز"
-    }
-  ],
-  "app": {
-    "primaryColor": "#59b139",
-    "primaryColorDeep": "#1c3e1d",
-    "brandTitle": "Waste724",
-    "brandSubtitle": "لطفاً نوع کاربری خود را انتخاب کنید",
-    "optionLabel": "شهروند",
-    "optionCaption": "ثبت درخواست بازیافت و پیگیری سفارش",
-    "driverLabel": "راننده",
-    "driverCaption": "مشاهده سفارش‌ها و مسیر جمع‌آوری",
-    "footerText": "Waste724 · نسخه 1.5.4",
-    "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/waste724-logo.png",
-    "alborzLogoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/alborz-logo.png",
-    "citizenImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/citizen.png",
-    "driverImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/driver.png"
-  }
+  "logoEnabled": false,
+  "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/logo.png",
+  "headerVisible": true,
+  "cooperate": {
+    "enabled": true,
+    "title": "همکاری با ما",
+    "desc": "شهرداری‌ یا کسب‌وکار هستید؟ برای همکاری با ما تماس بگیرید",
+    "link": ""
+  },
+  "backgroundEnabled": false,
+  "backgroundImageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/background.jpg"
 }
