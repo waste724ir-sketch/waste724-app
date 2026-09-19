@@ -1,26 +1,8 @@
 {
-  "banners": [
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-1.jpg",
-      "linkUrl": ""
-    },
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-2.jpg",
-      "linkUrl": ""
-    },
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-3.jpg",
-      "linkUrl": ""
-    },
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-4.jpg",
-      "linkUrl": ""
-    },
-    {
-      "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner-slide-5.jpg",
-      "linkUrl": ""
-    }
-  ],
+  "enabled": false,
+  "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
+  "linkUrl": "",
+  "alt": "Waste724",
   "logoEnabled": false,
   "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/logo.png",
   "headerVisible": true,
