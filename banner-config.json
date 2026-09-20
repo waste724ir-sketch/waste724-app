@@ -1,8 +1,5 @@
 {
-  "enabled": false,
-  "imageUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/banner.jpg",
-  "linkUrl": "",
-  "alt": "Waste724",
+  "banners": [],
   "logoEnabled": false,
   "logoUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/logo.png",
   "headerVisible": true,
