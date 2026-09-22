@@ -5,10 +5,10 @@
   "headerVisible": true,
   "versionLabel": "Waste724 · نسخه 1.6.3",
   "cardImages": {
-    "customerEnabled": false,
-    "customerUrl": "",
-    "driverEnabled": false,
-    "driverUrl": ""
+    "customerEnabled": true,
+    "customerUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/card-customer.jpg",
+    "driverEnabled": true,
+    "driverUrl": "https://raw.githubusercontent.com/waste724ir-sketch/waste724-app/main/card-driver.png"
   },
   "cooperate": {
     "enabled": false,
