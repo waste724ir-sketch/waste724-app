@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://download.waste724.ir/sitemap.xml
