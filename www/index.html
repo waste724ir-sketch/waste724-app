@@ -4,17 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Waste724</title>
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('w724-theme'); } catch (e) {}
+    if (t !== 'dark' && t !== 'light') {
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <style>
   :root {
-    --bg: #f4f8f5;
+    --bg: #f2f9f2;
     --card-bg: #ffffff;
-    --text: #16241a;
-    --muted: #6c8073;
-    --green: #4c9a2a;
-    --green-deep: #2f7a1c;
-    --orange: #e8471d;
-    --orange-deep: #c23a15;
-    --line: #e7efe8;
+    --text: #14281a;
+    --muted: #65806d;
+    --green: #3fae4a;
+    --green-deep: #22803a;
+    --green-bright: #6fd352;
+    --orange: #ff7a2f;
+    --orange-deep: #e04a12;
+    --yellow: #ffc93c;
+    --line: #e2f0e4;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -33,8 +45,41 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: calc(max(22px, env(safe-area-inset-top)) + 30px) 0 34px;
+    padding: calc(max(22px, env(safe-area-inset-top)) + 22px) 0 34px;
     position: relative;
+  }
+
+  /* --- حباب‌های رنگی شناور در پس‌زمینه --- */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 9s ease-in-out infinite;
+  }
+  .blob.b1 {
+    top: -70px; right: -60px;
+    width: 230px; height: 230px;
+    background: radial-gradient(circle at 35% 35%, rgba(111,211,82,.5), rgba(63,174,74,.28) 60%, transparent 72%);
+  }
+  .blob.b2 {
+    top: 30%; left: -90px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle at 60% 40%, rgba(255,201,60,.42), rgba(255,122,47,.22) 60%, transparent 72%);
+    animation-delay: -3s;
+  }
+  .blob.b3 {
+    bottom: -80px; right: -70px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle at 40% 40%, rgba(255,122,47,.34), rgba(224,74,18,.18) 60%, transparent 72%);
+    animation-delay: -6s;
+  }
+  .blob.b4 {
+    bottom: 12%; left: -50px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle at 50% 50%, rgba(63,174,74,.3), transparent 70%);
+    animation-delay: -4.5s;
   }
 
   /* واترمارک تزئینی محو در پس‌زمینه */
@@ -64,15 +109,27 @@
 
   /* --- هدر لوگو (قابل تغییر از پنل مدیریت) --- */
   .top-header {
-    width: calc(100% - 40px);
-    margin: 0 20px 14px;
-    display: flex;
+    margin: 0 20px 16px;
+    display: inline-flex;
     align-items: center;
     gap: 9px;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(6px);
+    border: 1.5px solid #ffffff;
+    border-radius: 999px;
+    padding: 8px 20px 8px 16px;
+    box-shadow: 0 8px 20px -10px rgba(20,60,30,0.25);
     animation: rise .5s cubic-bezier(.2,.8,.2,1) both;
   }
   .top-header img { height: 26px; width: auto; display: block; }
-  .top-header span { font-size: 14px; font-weight: 800; color: var(--text); }
+  .top-header span {
+    font-size: 14px;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--green-deep), var(--orange-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
   /* --- اسلایدر هیرو/بنر --- */
   .hero-slider {
@@ -80,10 +137,13 @@
     width: calc(100% - 28px);
     margin: 0 14px;
     aspect-ratio: 1280 / 477;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
     direction: ltr;
-    box-shadow: 0 14px 30px -14px rgba(20,40,25,0.28);
+    border: 3px solid #fff;
+    box-shadow:
+      0 16px 32px -14px rgba(20,60,30,0.35),
+      0 0 0 3px rgba(111,211,82,0.25);
     animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
   }
   .hero-slides {
@@ -121,20 +181,32 @@
     transition: all .25s ease;
   }
   .hero-dots .dot.active {
-    width: 16px;
+    width: 18px;
     border-radius: 4px;
-    background: #ffffff;
+    background: linear-gradient(90deg, var(--green-bright), var(--yellow));
   }
 
   /* --- عنوان انتخاب --- */
   .prompt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 15.5px;
-    font-weight: 700;
+    font-weight: 800;
     text-align: center;
     color: var(--text);
-    margin: 26px 20px 16px;
+    margin: 28px 20px 18px;
     animation: rise .55s .05s cubic-bezier(.2,.8,.2,1) both;
   }
+  .prompt::before,
+  .prompt::after {
+    content: "";
+    height: 3px;
+    width: 34px;
+    border-radius: 3px;
+  }
+  .prompt::before { background: linear-gradient(90deg, transparent, var(--green-bright)); }
+  .prompt::after { background: linear-gradient(90deg, var(--orange), transparent); }
 
   /* --- کارت‌های انتخاب --- */
   .options {
@@ -142,62 +214,75 @@
     padding: 0 20px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
 
   .option {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 14px;
     background: var(--card-bg);
-    border-radius: 22px;
-    padding: 12px;
-    box-shadow: 0 8px 22px -12px rgba(20,40,25,0.18);
+    border-radius: 26px;
+    padding: 13px;
+    border: 2px solid #fff;
+    box-shadow: 0 12px 26px -12px rgba(20,60,30,0.22);
     cursor: pointer;
-    transition: transform .16s cubic-bezier(.2,.8,.2,1);
+    transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease;
     animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
+    overflow: hidden;
   }
-  .option:nth-child(2) { animation-delay: .08s; }
-  .option:active { transform: scale(0.98); }
+  .option::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 6px;
+  }
+  .option.customer::before { background: linear-gradient(180deg, var(--green-bright), var(--green-deep)); }
+  .driver.option::before { background: linear-gradient(180deg, var(--yellow), var(--orange-deep)); }
+  .option:nth-child(2) { animation-delay: .09s; }
+  .option:active {
+    transform: scale(0.975);
+    box-shadow: 0 6px 14px -8px rgba(20,60,30,0.25);
+  }
 
   .option .chevron {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--muted);
-  }
-  .option .chevron svg { width: 100%; height: 100%; }
-
-  .option.customer .chevron {
-    width: 16px;
-    height: 16px;
+    color: #fff;
     align-self: flex-end;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
+  .option.customer .chevron { background: linear-gradient(135deg, var(--green), var(--green-deep)); }
+  .option.driver .chevron { background: linear-gradient(135deg, var(--orange), var(--orange-deep)); }
+  .option .chevron svg { width: 14px; height: 14px; }
 
   .option .thumb {
     flex-shrink: 0;
     width: 108px;
     height: 96px;
-    border-radius: 16px;
+    border-radius: 18px;
     overflow: hidden;
     position: relative;
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
   }
-  .option.customer .thumb { background: linear-gradient(160deg, #79c24a, var(--green) 55%, var(--green-deep)); }
-  .option.driver .thumb { background: linear-gradient(160deg, #f2823f, var(--orange) 55%, var(--orange-deep)); }
+  .option.customer .thumb { background: linear-gradient(160deg, #8fe06a, var(--green) 55%, var(--green-deep)); }
+  .option.driver .thumb { background: linear-gradient(160deg, #ffb05c, var(--orange) 55%, var(--orange-deep)); }
 
   .option.customer .thumb img {
     width: 118%;
     height: auto;
     object-fit: contain;
     object-position: bottom;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
   }
   .option.driver .thumb img {
     width: 100%;
@@ -210,21 +295,27 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(155deg, rgba(242,130,63,0.55), rgba(194,58,21,0.35) 60%, rgba(194,58,21,0.55));
+    background: linear-gradient(155deg, rgba(255,150,60,0.45), rgba(224,74,18,0.3) 60%, rgba(224,74,18,0.5));
   }
 
   .option .info { flex: 1; min-width: 0; }
   .option .title {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 16.5px;
-    font-weight: 800;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 900;
     color: var(--text);
   }
-  .option .badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .option.customer .badge-dot { background: var(--green); }
-  .option.driver .badge-dot { background: var(--orange); }
+  .option .badge-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  .option.customer .badge-dot { background: var(--green); box-shadow: 0 0 0 3px rgba(63,174,74,.18); }
+  .option.driver .badge-dot { background: var(--orange); box-shadow: 0 0 0 3px rgba(255,122,47,.18); animation-delay: -1.1s; }
 
   .option .desc {
     font-size: 12px;
@@ -237,7 +328,7 @@
   .cooperate {
     width: 100%;
     padding: 0 20px;
-    margin-top: 14px;
+    margin-top: 16px;
     display: none;
   }
   .cooperate.visible { display: block; }
@@ -245,9 +336,9 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(135deg, #eef6ec, #e4f1e6);
-    border: 1.5px dashed #a9cfa4;
-    border-radius: 18px;
+    background: linear-gradient(135deg, #fff8e6, #eef9e8);
+    border: 2px dashed #f0b93e;
+    border-radius: 20px;
     padding: 14px;
     cursor: pointer;
     transition: transform .16s cubic-bezier(.2,.8,.2,1);
@@ -256,35 +347,45 @@
   .cooperate .box:active { transform: scale(0.98); }
   .cooperate .icon {
     flex-shrink: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #ffffff;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--green-deep);
+    color: #fff;
+    box-shadow: 0 6px 14px -6px rgba(224,110,18,0.55);
   }
   .cooperate .icon svg { width: 22px; height: 22px; }
   .cooperate .info { flex: 1; min-width: 0; }
-  .cooperate .title { font-size: 14px; font-weight: 800; color: var(--text); }
+  .cooperate .title { font-size: 14px; font-weight: 900; color: var(--text); }
   .cooperate .desc { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.6; }
 
   /* --- فوتر --- */
   .footer {
     margin-top: 30px;
     font-size: 11.5px;
+    font-weight: 700;
     color: var(--muted);
-    opacity: .8;
+    opacity: .85;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     animation: rise .55s .16s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .footer::before {
+    content: "♻";
+    font-size: 13px;
+    color: var(--green);
   }
 
   /* --- حالت لودینگ --- */
   .loading-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(244,248,245,0.92);
-    backdrop-filter: blur(2px);
+    background: rgba(242,249,242,0.9);
+    backdrop-filter: blur(4px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -298,20 +399,94 @@
   .loading-overlay.active { opacity: 1; pointer-events: all; }
 
   .spinner {
-    width: 30px;
-    height: 30px;
-    border: 3px solid rgba(20,40,25,0.12);
+    width: 34px;
+    height: 34px;
+    border: 3.5px solid rgba(20,60,30,0.12);
     border-top-color: var(--loading-tint, var(--green));
     border-radius: 50%;
     animation: spin .8s linear infinite;
   }
-  .loading-overlay p { font-size: 13px; color: var(--muted); margin: 0; }
+  .loading-overlay p { font-size: 13px; font-weight: 700; color: var(--muted); margin: 0; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes rise {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-22px) scale(1.05); }
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+
+  /* --- دکمه تغییر پوسته --- */
+  .theme-toggle {
+    position: fixed;
+    top: calc(max(14px, env(safe-area-inset-top)) + 6px);
+    left: 16px;
+    z-index: 6;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-deep);
+    box-shadow: 0 6px 16px -8px rgba(20,60,30,.4);
+    cursor: pointer;
+  }
+  .theme-toggle svg { width: 19px; height: 19px; }
+  .theme-toggle .icon-sun { display: none; }
+
+  /* --- حالت تیره --- */
+  [data-theme="dark"] {
+    --bg: #0e1712;
+    --card-bg: #17251b;
+    --text: #eaf5ec;
+    --muted: #93ab99;
+    --line: #24382a;
+    color-scheme: dark;
+  }
+  [data-theme="dark"] .blob { opacity: .55; }
+  [data-theme="dark"] body::before { opacity: .07; }
+  [data-theme="dark"] .top-header {
+    background: rgba(23,37,27,.8);
+    border-color: #2c4433;
+    box-shadow: 0 8px 20px -10px rgba(0,0,0,.55);
+  }
+  [data-theme="dark"] .top-header span {
+    background: linear-gradient(90deg, var(--green-bright), var(--yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  [data-theme="dark"] .hero-slider {
+    border-color: #223a29;
+    box-shadow: 0 16px 32px -14px rgba(0,0,0,.65), 0 0 0 3px rgba(111,211,82,.16);
+  }
+  [data-theme="dark"] .option {
+    border-color: #223a29;
+    box-shadow: 0 12px 26px -12px rgba(0,0,0,.55);
+  }
+  [data-theme="dark"] .cooperate .box {
+    background: linear-gradient(135deg, #2b2513, #1a2a18);
+    border-color: #8a6a1e;
+  }
+  [data-theme="dark"] .loading-overlay { background: rgba(14,23,18,.9); }
+  [data-theme="dark"] .spinner { border-color: rgba(255,255,255,.15); }
+  [data-theme="dark"] .theme-toggle {
+    background: rgba(23,37,27,.85);
+    border-color: #2c4433;
+    color: var(--yellow);
+  }
+  [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
@@ -319,6 +494,16 @@
 </style>
 </head>
 <body>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="تغییر پوسته روشن/تاریک">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+  </button>
+
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
 
   <div class="content">
 
@@ -342,10 +527,10 @@
 
       <div class="option customer" onclick="go(this,'https://recycle.waste724.ir')">
         <div class="chevron">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
         </div>
         <div class="thumb">
-          <img src="assets/family.png" alt="شهروند">
+          <img src="assets/family.png" alt="شهروند" id="customerCardImg">
         </div>
         <div class="info">
           <div class="title"><span class="badge-dot"></span>شهروند</div>
@@ -355,10 +540,10 @@
 
       <div class="option driver" onclick="go(this,'https://driver.waste724.ir')">
         <div class="chevron">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
         </div>
         <div class="thumb">
-          <img src="assets/truck-photo.jpg" alt="راننده">
+          <img src="assets/truck-photo.jpg" alt="راننده" id="driverCardImg">
         </div>
         <div class="info">
           <div class="title"><span class="badge-dot"></span>راننده</div>
@@ -380,7 +565,7 @@
       </div>
     </div>
 
-    <div class="footer">Waste724 &middot; نسخه ۱٫۰</div>
+    <div class="footer" id="footerText">Waste724 &middot; نسخه ۱٫۰</div>
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">
@@ -389,6 +574,12 @@
   </div>
 
   <script>
+    document.getElementById('themeToggle').addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('w724-theme', next); } catch (e) {}
+    });
+
     function go(el, url) {
       var isDriver = el.classList.contains('driver');
       var overlay = document.getElementById('loadingOverlay');
@@ -489,6 +680,23 @@
             document.getElementById('topHeader').style.display = 'none';
           }
 
+          // --- متن نسخه (فوتر) ---
+          if (cfg.versionLabel) {
+            document.getElementById('footerText').textContent = cfg.versionLabel;
+          }
+
+          // --- تصاویر کارت‌ها ---
+          if (cfg.cardImages) {
+            if (cfg.cardImages.customerEnabled === true && cfg.cardImages.customerUrl) {
+              var cUrl = cfg.cardImages.customerUrl + (cfg.cardImages.customerUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
+              document.getElementById('customerCardImg').src = cUrl;
+            }
+            if (cfg.cardImages.driverEnabled === true && cfg.cardImages.driverUrl) {
+              var dUrl = cfg.cardImages.driverUrl + (cfg.cardImages.driverUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
+              document.getElementById('driverCardImg').src = dUrl;
+            }
+          }
+
           // --- بخش همکاری با ما ---
           if (cfg.cooperate && cfg.cooperate.enabled === true) {
             var sec = document.getElementById('cooperateSection');
@@ -508,8 +716,10 @@
               (cfg.backgroundImageUrl.indexOf('?') === -1 ? '?t=' : '&t=') + Date.now();
             var preload = new Image();
             preload.onload = function () {
+              var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+              var tint = isDark ? 'rgba(14,23,18,' : 'rgba(242,249,242,';
               document.body.style.backgroundImage =
-                'linear-gradient(rgba(244,248,245,0.85), rgba(244,248,245,0.92)), url("' + bgUrl + '")';
+                'linear-gradient(' + tint + '0.85), ' + tint + '0.92)), url("' + bgUrl + '")';
               document.body.style.backgroundSize = 'cover';
               document.body.style.backgroundPosition = 'center';
               document.body.style.backgroundRepeat = 'no-repeat';

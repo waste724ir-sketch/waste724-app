@@ -4,494 +4,900 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>پنل مدیریت | Waste724</title>
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('w724-theme'); } catch (e) {}
+    if (t !== 'dark' && t !== 'light') {
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <style>
-  :root{
-    --green:#59b139; --green-deep:#1c3e1d; --orange:#e8471d;
-    --bg:#f4f7f5; --surface:#ffffff; --border:#e2e8e4; --text:#16321d; --muted:#5b6f61;
+  :root {
+    --bg: #f2f9f2;
+    --card: #ffffff;
+    --text: #14281a;
+    --muted: #65806d;
+    --green: #3fae4a;
+    --green-deep: #22803a;
+    --green-bright: #6fd352;
+    --orange: #ff7a2f;
+    --orange-deep: #e04a12;
+    --yellow: #ffc93c;
+    --line: #e2f0e4;
+    --danger: #d33f1c;
   }
-  *{box-sizing:border-box;}
-  body{
-    font-family:Tahoma,"Segoe UI",sans-serif; background:var(--bg); color:var(--text);
-    margin:0; padding:24px 16px 60px; direction:rtl;
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Tahoma, "Segoe UI", sans-serif;
+    color: var(--text);
+    padding: 24px 16px 60px;
+    background:
+      radial-gradient(560px 320px at 90% -5%, rgba(111,211,82,.22), transparent 70%),
+      radial-gradient(480px 300px at -5% 30%, rgba(255,201,60,.18), transparent 70%),
+      radial-gradient(520px 340px at 100% 85%, rgba(255,122,47,.14), transparent 70%),
+      var(--bg);
+    background-attachment: fixed;
   }
-  .wrap{max-width:520px;margin:0 auto;}
-  h1{font-size:20px;margin:0 0 4px;}
-  .subtitle{color:var(--muted);font-size:13px;margin-bottom:24px;}
-  .card{
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    padding:22px; margin-bottom:18px; box-shadow:0 2px 10px rgba(0,0,0,0.03);
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* --- هدر رنگی صفحه --- */
+  .page-head {
+    background: linear-gradient(120deg, var(--green-deep), var(--green) 45%, var(--orange) 100%);
+    border-radius: 22px;
+    padding: 22px 24px;
+    color: #fff;
+    box-shadow: 0 16px 30px -14px rgba(20,60,30,.4);
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
   }
-  .card h2{font-size:15px;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
-  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;}
-  label:first-child{margin-top:0;}
-  input[type=text], input[type=password], select{
-    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px;
-    font-family:inherit; font-size:14px; background:#fff;
+  .page-head::after {
+    content: "♻";
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 74px;
+    opacity: .16;
   }
-  input[type=file]{width:100%;font-size:13px;}
-  input[type=color]{width:100%;border:1px solid var(--border);border-radius:10px;cursor:pointer;}
-  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
-  .toggle-row label{margin:0;font-size:14px;color:var(--text);}
-  .preview{width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--border);}
-  button{
-    width:100%; padding:13px; border:none; border-radius:12px; font-size:15px; font-weight:bold;
-    cursor:pointer; margin-top:8px;
+  .page-head h1 { font-size: 20px; margin: 0 0 6px; }
+  .page-head .sub { color: rgba(255,255,255,.92); font-size: 12.5px; margin: 0; line-height: 1.9; max-width: 640px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
-  .btn-primary{background:var(--green);color:#fff;}
-  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
-  .btn-secondary{background:#eef1ee;color:var(--text);}
-  .msg{font-size:13px;margin-top:10px;padding:10px 12px;border-radius:8px;display:none;}
-  .msg.ok{background:#e8f7ea;color:#1c3e1d;display:block;}
-  .msg.err{background:#fdeceb;color:#a5320f;display:block;}
-  .hint{font-size:12px;color:var(--muted);line-height:1.8;margin-top:6px;}
-  .hidden{display:none !important;}
-  a{color:var(--green);}
-  .spinner{
-    width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
-    border-radius:50%;display:inline-block;vertical-align:middle;margin-left:8px;
-    animation:spin .7s linear infinite;
+  @media (min-width: 860px) {
+    .grid { grid-template-columns: 1.15fr 0.85fr; align-items: start; }
   }
-  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .card {
+    background: var(--card);
+    border: 1.5px solid #fff;
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 24px -14px rgba(20,60,30,.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--green-bright), var(--green-deep));
+  }
+  .card.accent-orange::before { background: linear-gradient(180deg, var(--yellow), var(--orange-deep)); }
+  .card.accent-yellow::before { background: linear-gradient(180deg, #ffe08a, #e8a212); }
+
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card .card-desc { font-size: 12px; color: var(--muted); margin: 0 0 14px; line-height: 1.8; }
+
+  label { display: block; font-size: 12.5px; font-weight: 700; margin: 12px 0 5px; }
+  label.first { margin-top: 0; }
+  input[type=text], input[type=password], input[type=url], textarea {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    background: #fafdfa;
+    color: var(--text);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  textarea { resize: vertical; min-height: 54px; }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(63,174,74,.16);
+    background: #fff;
+  }
+
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+  .toggle-row span { font-size: 13px; font-weight: 700; }
+  .switch {
+    position: relative;
+    width: 44px;
+    height: 25px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider-el {
+    position: absolute; inset: 0;
+    background: #d9e3da;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .slider-el::before {
+    content: "";
+    position: absolute;
+    width: 19px; height: 19px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  }
+  .switch input:checked + .slider-el { background: linear-gradient(90deg, var(--green), var(--green-bright)); }
+  .switch input:checked + .slider-el::before { transform: translateX(-19px); }
+
+  .file-drop {
+    border: 2px dashed #9ccf96;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    background: linear-gradient(135deg, #f6fcf4, #fdf9ec);
+    position: relative;
+    overflow: hidden;
+    transition: border-color .15s ease;
+  }
+  .file-drop:hover { border-color: var(--green); }
+  .file-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file-drop img { max-height: 70px; margin-top: 8px; border-radius: 8px; }
+
+  .section-body { display: none; }
+  .section-body.open { display: block; }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: 13.5px;
+    font-weight: 800;
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  button:active { transform: scale(.97); }
+  .btn-primary {
+    background: linear-gradient(120deg, var(--green-deep), var(--green) 60%, var(--green-bright));
+    color: #fff;
+    width: 100%;
+    box-shadow: 0 10px 22px -10px rgba(34,128,58,.55);
+    font-size: 14.5px;
+    padding: 14px 18px;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-secondary {
+    background: #edf7ea;
+    color: var(--green-deep);
+    border: 1.5px solid #cde8c6;
+  }
+  .btn-secondary:hover { background: #e2f1dd; }
+
+  .status {
+    margin-top: 12px;
+    font-size: 12.5px;
+    border-radius: 12px;
+    padding: 11px 13px;
+    display: none;
+    white-space: pre-line;
+    line-height: 1.8;
+    font-weight: 700;
+  }
+  .status.show { display: block; }
+  .status.ok { background: #e7f7e4; color: var(--green-deep); border: 1.5px solid #bfe5b6; }
+  .status.err { background: #fdecea; color: var(--danger); border: 1.5px solid #f5c4ba; }
+  .status.info { background: #eef4fb; color: #1c5a8c; border: 1.5px solid #c5d9ef; }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
+
+  /* --- ردیف‌های لیست بنر --- */
+  .banner-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #fbfdfb;
+    transition: border-color .15s ease;
+  }
+  .banner-row:hover { border-color: #bfe0b8; }
+  .banner-row .thumb-drop {
+    flex-shrink: 0;
+    width: 68px;
+    height: 52px;
+    border-radius: 10px;
+    border: 2px dashed #f0b93e;
+    background: #fffdf5 center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .banner-row .thumb-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .banner-row .fields { flex: 1; min-width: 0; }
+  .banner-row .fields input {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .banner-row .remove-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #fdecea;
+    color: var(--danger);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s ease;
+  }
+  .banner-row .remove-btn:hover { background: #f9d5ce; }
+  .token-note {
+    font-size: 11.5px;
+    color: #7a6218;
+    background: linear-gradient(135deg, #fff8e3, #fdf3d8);
+    border: 1.5px solid #f0dda6;
+    border-radius: 12px;
+    padding: 11px 13px;
+    margin-top: 12px;
+    line-height: 1.9;
+  }
+
+  /* پیش‌نمایش موبایل */
+  .phone-preview {
+    position: sticky;
+    top: 20px;
+    background: linear-gradient(160deg, #14301b, #0f1c12);
+    border-radius: 38px;
+    padding: 14px 10px;
+    box-shadow: 0 22px 44px -18px rgba(10,30,15,.55);
+  }
+  .phone-screen {
+    background:
+      radial-gradient(220px 160px at 85% 0%, rgba(111,211,82,.35), transparent 70%),
+      radial-gradient(200px 150px at 0% 45%, rgba(255,201,60,.28), transparent 70%),
+      radial-gradient(220px 160px at 100% 100%, rgba(255,122,47,.22), transparent 70%),
+      var(--bg);
+    border-radius: 26px;
+    overflow: hidden;
+    height: 560px;
+    overflow-y: auto;
+    padding: 16px 12px 20px;
+    font-family: Tahoma, sans-serif;
+  }
+  .pv-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 auto 12px;
+    width: fit-content;
+    background: rgba(255,255,255,.85);
+    border: 1.5px solid #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 6px 14px -8px rgba(20,60,30,.3);
+  }
+  .pv-header img { height: 20px; }
+  .pv-header span {
+    font-size: 12px;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--green-deep), var(--orange-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pv-hero {
+    width: 100%;
+    aspect-ratio: 1280/477;
+    border-radius: 18px;
+    background: #dde9de center/cover no-repeat;
+    border: 2.5px solid #fff;
+    box-shadow: 0 10px 20px -10px rgba(0,0,0,.3), 0 0 0 2.5px rgba(111,211,82,.25);
+  }
+  .pv-prompt { text-align: center; font-size: 12.5px; font-weight: 800; margin: 16px 0 10px; color: var(--text); }
+  .pv-card {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border-radius: 18px; padding: 9px;
+    border: 1.5px solid #fff;
+    box-shadow: 0 8px 16px -8px rgba(20,60,30,.22);
+    margin-bottom: 11px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pv-card::before { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 4px; }
+  .pv-card.pv-customer::before { background: linear-gradient(180deg, var(--green-bright), var(--green-deep)); }
+  .pv-card.pv-driver::before { background: linear-gradient(180deg, var(--yellow), var(--orange-deep)); }
+  .pv-card .pv-thumb { width: 62px; height: 54px; border-radius: 12px; flex-shrink: 0; }
+  .pv-card.pv-customer .pv-thumb { background: linear-gradient(160deg,#8fe06a,#22803a); }
+  .pv-card.pv-driver .pv-thumb { background: linear-gradient(160deg,#ffb05c,#e04a12); }
+  .pv-card .pv-title { font-size: 12px; font-weight: 800; }
+  .pv-card .pv-desc { font-size: 9.5px; color: var(--muted); margin-top: 2px; }
+  .pv-coop {
+    display: none;
+    align-items: center; gap: 9px;
+    background: linear-gradient(135deg, #fff8e6, #eef9e8);
+    border: 1.5px dashed #f0b93e;
+    border-radius: 16px; padding: 10px; margin-top: 8px;
+  }
+  .pv-coop.show { display: flex; }
+  .pv-coop .pv-title { font-size: 11.5px; font-weight: 800; }
+  .pv-coop .pv-desc { font-size: 9px; color: var(--muted); margin-top: 2px; }
+  /* --- دکمه تغییر پوسته --- */
+  .theme-toggle {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 20;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    background: rgba(255,255,255,.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-deep);
+    box-shadow: 0 6px 16px -8px rgba(20,60,30,.4);
+  }
+  .theme-toggle svg { width: 19px; height: 19px; }
+  .theme-toggle .icon-sun { display: none; }
+
+  /* --- حالت تیره --- */
+  [data-theme="dark"] {
+    --bg: #0e1712;
+    --card: #16251b;
+    --text: #eaf5ec;
+    --muted: #93ab99;
+    --line: #26392b;
+    color-scheme: dark;
+  }
+  [data-theme="dark"] body {
+    background:
+      radial-gradient(560px 320px at 90% -5%, rgba(111,211,82,.1), transparent 70%),
+      radial-gradient(480px 300px at -5% 30%, rgba(255,201,60,.07), transparent 70%),
+      radial-gradient(520px 340px at 100% 85%, rgba(255,122,47,.07), transparent 70%),
+      var(--bg);
+  }
+  [data-theme="dark"] .card {
+    border-color: #223a29;
+    box-shadow: 0 10px 24px -14px rgba(0,0,0,.55);
+  }
+  [data-theme="dark"] input[type=text],
+  [data-theme="dark"] input[type=password],
+  [data-theme="dark"] input[type=url],
+  [data-theme="dark"] textarea {
+    background: #101b13;
+    border-color: var(--line);
+  }
+  [data-theme="dark"] input:focus,
+  [data-theme="dark"] textarea:focus {
+    background: #142117;
+    box-shadow: 0 0 0 3px rgba(63,174,74,.22);
+  }
+  [data-theme="dark"] .btn-secondary {
+    background: #1b2c1e;
+    color: var(--green-bright);
+    border-color: #2c4433;
+  }
+  [data-theme="dark"] .btn-secondary:hover { background: #223626; }
+  [data-theme="dark"] .status.ok { background: #16281a; color: #8fdc7d; border-color: #2c4a30; }
+  [data-theme="dark"] .status.err { background: #2b1512; color: #ff9d84; border-color: #55291f; }
+  [data-theme="dark"] .status.info { background: #14202b; color: #8fc0e8; border-color: #26405a; }
+  [data-theme="dark"] .file-drop {
+    background: linear-gradient(135deg, #142117, #1d1c10);
+    border-color: #4c6a48;
+  }
+  [data-theme="dark"] .banner-row { background: #122016; }
+  [data-theme="dark"] .banner-row:hover { border-color: #2c4a30; }
+  [data-theme="dark"] .banner-row .thumb-drop { background-color: #1d1c10; border-color: #8a6a1e; }
+  [data-theme="dark"] .banner-row .remove-btn { background: #2b1512; color: #ff9d84; }
+  [data-theme="dark"] .banner-row .remove-btn:hover { background: #3a1c17; }
+  [data-theme="dark"] .token-note {
+    background: linear-gradient(135deg, #241f0e, #201d0c);
+    border-color: #6b5618;
+    color: #e8c96a;
+  }
+  [data-theme="dark"] .slider-el { background: #2c4433; }
+  [data-theme="dark"] .phone-preview { background: linear-gradient(160deg, #050a06, #000); }
+  [data-theme="dark"] .phone-screen {
+    background:
+      radial-gradient(220px 160px at 85% 0%, rgba(111,211,82,.14), transparent 70%),
+      radial-gradient(200px 150px at 0% 45%, rgba(255,201,60,.1), transparent 70%),
+      radial-gradient(220px 160px at 100% 100%, rgba(255,122,47,.1), transparent 70%),
+      var(--bg);
+  }
+  [data-theme="dark"] .pv-header { background: rgba(23,37,27,.85); border-color: #2c4433; }
+  [data-theme="dark"] .pv-header span {
+    background: linear-gradient(90deg, var(--green-bright), var(--yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  [data-theme="dark"] .pv-hero { border-color: #223a29; box-shadow: 0 10px 20px -10px rgba(0,0,0,.6), 0 0 0 2.5px rgba(111,211,82,.16); }
+  [data-theme="dark"] .pv-card { background: #17251b; border-color: #223a29; box-shadow: 0 8px 16px -8px rgba(0,0,0,.5); }
+  [data-theme="dark"] .pv-coop { background: linear-gradient(135deg, #2b2513, #1a2a18); border-color: #8a6a1e; }
+  [data-theme="dark"] .theme-toggle {
+    background: rgba(23,37,27,.88);
+    border-color: #2c4433;
+    color: var(--yellow);
+  }
+  [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 </style>
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" aria-label="تغییر پوسته روشن/تاریک">
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+</button>
 <div class="wrap">
-
-  <!-- صفحه‌ی ورود -->
-  <div id="loginScreen">
-    <h1>ورود به پنل مدیریت Waste724</h1>
-    <div class="subtitle">برای عوض‌کردن بنر، پس‌زمینه و تنظیمات اپ</div>
-    <div class="card">
-      <label>توکن دسترسی گیت‌هاب (GitHub Token)</label>
-      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <div class="hint">
-        این توکن فقط یک‌بار لازمه بسازی و همیشه همینو استفاده کن. اگه هنوز
-        نساختی، پایین صفحه راهنمای ساختش هست. توکن فقط توی همین مرورگر
-        (روی همین گوشی/کامپیوتر) ذخیره می‌شه، جای دیگه‌ای فرستاده نمی‌شه.
-      </div>
-      <button class="btn-primary" id="loginBtn" style="margin-top:16px;">ورود</button>
-      <div class="msg" id="loginMsg"></div>
-    </div>
-
-    <div class="card" style="font-size:13px;color:var(--muted);line-height:2;">
-      <b style="color:var(--text);">راهنمای ساخت توکن (فقط یک‌بار لازمه):</b><br>
-      ۱. برو به
-      <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
-      ۲. توی Note بنویس: <code>waste724-panel</code><br>
-      ۳. Expiration رو روی <code>No expiration</code> بذار (یا هرچقدر خواستی)<br>
-      ۴. زیر Select scopes، فقط تیک <code>repo</code> رو بزن<br>
-      ۵. پایین صفحه <b>Generate token</b> رو بزن<br>
-      ۶. توکنی که نشون می‌ده (با <code>ghp_</code> شروع می‌شه) رو کپی کن و همینجا بالا پیست کن
-      <br><br>
-      ⚠️ این توکن مثل رمز عبوره؛ برای کس دیگه‌ای نفرستش.
-    </div>
+  <div class="page-head">
+    <h1>🌿 پنل مدیریت صفحه‌ی اول اپ Waste724</h1>
+    <p class="sub">بنر، لوگو و بخش «همکاری با ما» را از همینجا مدیریت کنید — تغییرات مستقیم روی گیت‌هاب ذخیره می‌شود و اپ بدون نیاز به بیلد مجدد آن‌ها را می‌خواند.</p>
   </div>
 
-  <!-- پنل اصلی -->
-  <div id="panelScreen" class="hidden">
-    <h1>پنل مدیریت Waste724</h1>
-    <div class="subtitle">تغییرات ظرف چند دقیقه توی اپ اعمال می‌شه</div>
+  <div class="grid">
+    <div>
 
-    <div class="card">
-      <h2>🖼️ بنر بالای صفحه (اسلایدشو)</h2>
-      <div class="toggle-row">
-        <label for="bannerEnabled">نمایش بنر</label>
-        <input type="checkbox" id="bannerEnabled">
-      </div>
-      <div class="hint" style="margin-bottom:10px;">
-        تا ۳ اسلاید می‌تونی بذاری؛ اگه بیشتر از یکی فعال باشه، خودکار هر
-        ۴ ثانیه بین‌شون می‌چرخه. برای هرکدوم که نمی‌خوای، فیلد عکس رو
-        خالی بذار.
+      <!-- اتصال به گیت‌هاب -->
+      <div class="card">
+        <h2>🔗 اتصال به گیت‌هاب</h2>
+        <p class="card-desc">این اطلاعات فقط در همین مرورگر شما ذخیره می‌شود و به هیچ سرور دیگری ارسال نمی‌گردد.</p>
+
+        <div class="row">
+          <div>
+            <label class="first">صاحب ریپو (owner)</label>
+            <input type="text" id="ghOwner" value="waste724ir-sketch">
+          </div>
+          <div>
+            <label class="first">نام ریپو</label>
+            <input type="text" id="ghRepo" value="waste724-app">
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>برنچ</label>
+            <input type="text" id="ghBranch" value="main">
+          </div>
+          <div>
+            <label>مسیر پایه (اگر فایل‌ها زیرپوشه‌ای هستند)</label>
+            <input type="text" id="ghBasePath" placeholder="خالی = ریشه‌ی ریپو">
+          </div>
+        </div>
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="token-note">
+          ⚠️ توکن باید فقط دسترسی <b>Contents: Read & Write</b> روی همین ریپو داشته باشد (بهتر است از نوع Fine-grained token بسازید، نه توکن با دسترسی کامل حساب). این توکن را با کسی به اشتراک نگذارید.
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <button class="btn-secondary" onclick="loadConfig()">📥 خواندن تنظیمات فعلی</button>
+        </div>
+        <div class="status" id="loadStatus"></div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
-        <b style="font-size:13px;">اسلاید ۱</b>
-        <label>عکس (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
-        <input type="file" id="banner1File" accept="image/*">
-        <img id="banner1Preview" class="preview">
-        <label>لینک (اختیاری)</label>
-        <input type="text" id="banner1Link" placeholder="https://recycle.waste724.ir/promo">
+      <!-- بنر -->
+      <div class="card accent-orange">
+        <h2 style="margin:0">🖼️ بنرهای اسلایدر</h2>
+        <p class="card-desc">هر بنری که اینجا اضافه کنی، به‌عنوان یک اسلاید جدید (بعد از عکس اصلی هدر) به اسلایدر بالای صفحه اضافه می‌شود. می‌توانی هرچند بنر که خواستی اضافه یا حذف کنی.</p>
+
+        <div id="bannerList"></div>
+
+        <button class="btn-secondary" style="width:100%; margin-top:6px;" onclick="addBannerRow()">➕ افزودن بنر جدید</button>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
-        <b style="font-size:13px;">اسلاید ۲</b>
-        <label>عکس (اختیاری)</label>
-        <input type="file" id="banner2File" accept="image/*">
-        <img id="banner2Preview" class="preview">
-        <label>لینک (اختیاری)</label>
-        <input type="text" id="banner2Link" placeholder="">
+      <!-- لوگو -->
+      <div class="card accent-yellow">
+        <div class="toggle-row">
+          <h2 style="margin:0">🏷️ لوگوی هدر</h2>
+          <label class="switch"><input type="checkbox" id="headerVisible" checked onchange="renderPreview()"><span class="slider-el"></span></label>
+        </div>
+        <p class="card-desc">لوگوی کوچک بالای صفحه، کنار نام Waste724. کلید بالا نمایش/عدم‌نمایش کل نوار هدر را کنترل می‌کند.</p>
+
+        <div class="toggle-row">
+          <span style="font-size:12.5px; font-weight:700; color:var(--muted)">استفاده از لوگوی سفارشی</span>
+          <label class="switch"><input type="checkbox" id="logoEnabled" onchange="renderPreview()"><span class="slider-el"></span></label>
+        </div>
+
+        <label>تصویر لوگو (ترجیحاً PNG با پس‌زمینه شفاف)</label>
+        <div class="file-drop" id="logoDrop">
+          📤 برای انتخاب لوگو کلیک کنید
+          <input type="file" accept="image/*" id="logoFile" onchange="handleFile(event,'logo')">
+          <img id="logoPreviewImg" style="display:none">
+        </div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
-        <b style="font-size:13px;">اسلاید ۳</b>
-        <label>عکس (اختیاری)</label>
-        <input type="file" id="banner3File" accept="image/*">
-        <img id="banner3Preview" class="preview">
-        <label>لینک (اختیاری)</label>
-        <input type="text" id="banner3Link" placeholder="">
+      <!-- همکاری با ما -->
+      <div class="card">
+        <div class="toggle-row">
+          <h2 style="margin:0">🤝 بخش «همکاری با ما»</h2>
+          <label class="switch"><input type="checkbox" id="coopEnabled" onchange="renderPreview()"><span class="slider-el"></span></label>
+        </div>
+        <p class="card-desc">با روشن کردن این کلید، یک کارت زیر گزینه‌های شهروند/راننده اضافه می‌شود. با خاموش کردن، کاملاً از صفحه حذف می‌شود.</p>
+
+        <label class="first">عنوان</label>
+        <input type="text" id="coopTitle" value="همکاری با ما" oninput="renderPreview()">
+        <label>توضیح کوتاه</label>
+        <textarea id="coopDesc" oninput="renderPreview()">شهرداری‌ یا کسب‌وکار هستید؟ برای همکاری با ما تماس بگیرید</textarea>
+        <label>لینک (فرم، صفحه تماس، یا mailto:)</label>
+        <input type="url" id="coopLink" placeholder="https://... یا mailto:info@waste724.ir">
       </div>
+
+      <button class="btn-primary" id="saveBtn" onclick="saveAll()">💾 ذخیره و اعمال روی اپ</button>
+      <div class="status" id="saveStatus"></div>
+
     </div>
 
-    <div class="card">
-      <h2>🎨 پس‌زمینه‌ی صفحه‌ی اول</h2>
-      <div class="toggle-row">
-        <label for="bgEnabled">نمایش پس‌زمینه‌ی سفارشی</label>
-        <input type="checkbox" id="bgEnabled">
-      </div>
-      <label>تم پس‌زمینه</label>
-      <select id="bgTheme">
-        <option value="dark">تیره (برای عکس‌های تیره — متن سفید می‌مونه)</option>
-        <option value="light">روشن (برای عکس‌های روشن/سفید — متن تیره می‌شه)</option>
-      </select>
-      <label>عکس پس‌زمینه‌ی جدید (اختیاری)</label>
-      <input type="file" id="bgFile" accept="image/*">
-      <img id="bgPreview" class="preview">
-    </div>
-
-    <div class="card">
-      <h2>🎨 لوگو، رنگ و متن‌های اپ</h2>
-
-      <label>لوگوی جدید (اختیاری — دایره‌ی سفید بالای صفحه)</label>
-      <input type="file" id="logoFile" accept="image/*">
-      <img id="logoPreview" class="preview" style="max-height:90px;object-fit:contain;background:#fff;">
-
-      <label>رنگ اصلی</label>
-      <input type="color" id="primaryColor" value="#59b139" style="height:44px;padding:4px;">
-
-      <label>رنگ اصلی (سایه‌ی تیره‌تر)</label>
-      <input type="color" id="primaryColorDeep" value="#1c3e1d" style="height:44px;padding:4px;">
-
-      <label>عنوان اصلی</label>
-      <input type="text" id="brandTitle" placeholder="Waste724">
-
-      <label>زیرنویس زیر عنوان</label>
-      <input type="text" id="brandSubtitle" placeholder="لطفاً نوع کاربری خود را انتخاب کنید">
-
-      <label>برچسب دکمه (شهروند)</label>
-      <input type="text" id="optionLabel" placeholder="شهروند">
-
-      <label>توضیح زیر دکمه (شهروند)</label>
-      <input type="text" id="optionCaption" placeholder="ثبت درخواست بازیافت و پیگیری سفارش">
-
-      <label>برچسب دکمه (راننده)</label>
-      <input type="text" id="driverLabel" placeholder="راننده">
-
-      <label>توضیح زیر دکمه (راننده)</label>
-      <input type="text" id="driverCaption" placeholder="مشاهده سفارش‌ها و مسیر جمع‌آوری">
-
-      <label>متن پایین صفحه (فوتر)</label>
-      <input type="text" id="footerText" placeholder="Waste724 · نسخه ۱٫۲">
-    </div>
-
-    <div class="card">
-      <h2>🤝 همکاران / مورد اعتماد</h2>
-      <div class="toggle-row">
-        <label for="partnersEnabled">نمایش این بخش</label>
-        <input type="checkbox" id="partnersEnabled">
-      </div>
-      <label>عنوان بخش</label>
-      <input type="text" id="partnersLabel" placeholder="مورد اعتماد و همکاری با">
-
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
-        <b style="font-size:13px;">لوگوی همکار ۱</b>
-        <label>عکس (اختیاری — اگه عوض نکنی، همون قبلی می‌مونه)</label>
-        <input type="file" id="partner1File" accept="image/*">
-        <img id="partner1Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
-        <label>نام (برای دسترسی‌پذیری)</label>
-        <input type="text" id="partner1Name" placeholder="بانک شهر">
-      </div>
-
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
-        <b style="font-size:13px;">لوگوی همکار ۲</b>
-        <label>عکس (اختیاری)</label>
-        <input type="file" id="partner2File" accept="image/*">
-        <img id="partner2Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
-        <label>نام</label>
-        <input type="text" id="partner2Name" placeholder="بیمه البرز">
-      </div>
-
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
-        <b style="font-size:13px;">لوگوی همکار ۳</b>
-        <label>عکس (اختیاری)</label>
-        <input type="file" id="partner3File" accept="image/*">
-        <img id="partner3Preview" class="preview" style="max-height:70px;object-fit:contain;background:#fff;">
-        <label>نام</label>
-        <input type="text" id="partner3Name" placeholder="">
+    <!-- پیش‌نمایش -->
+    <div class="phone-preview">
+      <div class="phone-screen">
+        <div class="pv-header" id="pvHeader">
+          <img id="pvLogo" src="../mobile-app/www/assets/logo-icon.png">
+          <span>Waste724</span>
+        </div>
+        <div class="pv-hero" id="pvHero" style="background-image:url('../mobile-app/www/assets/hero-collage.jpg')"></div>
+        <div class="pv-prompt">لطفاً نوع کاربری خود را انتخاب کنید</div>
+        <div class="pv-card pv-customer">
+          <div class="pv-thumb"></div>
+          <div>
+            <div class="pv-title">شهروند</div>
+            <div class="pv-desc">ثبت درخواست بازیافت و پیگیری سفارش</div>
+          </div>
+        </div>
+        <div class="pv-card pv-driver">
+          <div class="pv-thumb"></div>
+          <div>
+            <div class="pv-title">راننده</div>
+            <div class="pv-desc">مشاهده سفارش‌ها و مسیر جمع‌آوری</div>
+          </div>
+        </div>
+        <div class="pv-coop" id="pvCoop">
+          <div style="font-size:18px">🤝</div>
+          <div>
+            <div class="pv-title" id="pvCoopTitle">همکاری با ما</div>
+            <div class="pv-desc" id="pvCoopDesc">...</div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <button class="btn-primary" id="saveBtn">ذخیره‌ی تغییرات</button>
-    <button class="btn-secondary" id="logoutBtn">خروج از پنل</button>
-    <div class="msg" id="saveMsg"></div>
   </div>
-
 </div>
 
 <script>
-  const OWNER = 'waste724ir-sketch';
-  const REPO  = 'waste724-app';
-  const BRANCH = 'main';
-  const API = `https://api.github.com/repos/${OWNER}/${REPO}/contents`;
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('w724-theme', next); } catch (e) {}
+  });
 
-  const $ = (id) => document.getElementById(id);
-  let token = localStorage.getItem('w724_token') || '';
+  var uploads = { logo: null }; // { base64, mime, name }
+  var bannersList = []; // [{ id, file:{base64,mime}|null, existingUrl:string|null, linkUrl:string }]
+  var bannerIdSeq = 0;
 
-  function ghHeaders() {
+  function apiBase() {
+    var owner = document.getElementById('ghOwner').value.trim();
+    var repo = document.getElementById('ghRepo').value.trim();
+    return 'https://api.github.com/repos/' + owner + '/' + repo;
+  }
+  function fullPath(name) {
+    var base = document.getElementById('ghBasePath').value.trim();
+    base = base.replace(/^\/+|\/+$/g, '');
+    return base ? (base + '/' + name) : name;
+  }
+  function authHeaders() {
+    var token = document.getElementById('ghToken').value.trim();
     return {
       'Authorization': 'Bearer ' + token,
       'Accept': 'application/vnd.github+json'
     };
   }
-
-  async function ghGetFile(path) {
-    const res = await fetch(`${API}/${path}?ref=${BRANCH}&t=${Date.now()}`, { headers: ghHeaders() });
-    if (!res.ok) throw new Error('خطا در خواندن ' + path + ' (کد ' + res.status + ')');
-    return res.json(); // { content (base64), sha, ... }
+  function showStatus(id, type, msg) {
+    var el = document.getElementById(id);
+    el.className = 'status show ' + type;
+    el.textContent = msg;
+  }
+  function extFromMime(mime) {
+    if (mime === 'image/png') return 'png';
+    if (mime === 'image/webp') return 'webp';
+    return 'jpg';
   }
 
-  async function ghPutFile(path, base64Content, sha, message) {
-    const body = { message, content: base64Content, branch: BRANCH };
-    if (sha) body.sha = sha;
-    const res = await fetch(`${API}/${path}`, {
-      method: 'PUT',
-      headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+  function handleFile(evt, kind) {
+    var file = evt.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base64 = reader.result.split(',')[1];
+      uploads[kind] = { base64: base64, mime: file.type, name: file.name };
+      var imgEl = document.getElementById(kind + 'PreviewImg');
+      imgEl.src = reader.result;
+      imgEl.style.display = 'block';
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // --- مدیریت لیست بنرها ---
+  function addBannerRow(existing) {
+    bannersList.push({
+      id: ++bannerIdSeq,
+      file: null,
+      existingUrl: (existing && existing.imageUrl) || null,
+      linkUrl: (existing && existing.linkUrl) || ''
     });
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error('خطا در ذخیره‌ی ' + path + ': ' + errText);
+    renderBannerList();
+  }
+
+  function removeBannerRow(id) {
+    bannersList = bannersList.filter(function (b) { return b.id !== id; });
+    renderBannerList();
+    renderPreview();
+  }
+
+  function bannerFileChange(id, evt) {
+    var file = evt.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base64 = reader.result.split(',')[1];
+      var item = bannersList.filter(function (b) { return b.id === id; })[0];
+      if (!item) return;
+      item.file = { base64: base64, mime: file.type };
+      item.previewDataUrl = reader.result;
+      renderBannerList();
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function bannerLinkChange(id, value) {
+    var item = bannersList.filter(function (b) { return b.id === id; })[0];
+    if (item) item.linkUrl = value;
+  }
+
+  function renderBannerList() {
+    var wrap = document.getElementById('bannerList');
+    wrap.innerHTML = '';
+    if (bannersList.length === 0) {
+      wrap.innerHTML = '<div class="hint">هنوز بنری اضافه نشده. با دکمه‌ی زیر شروع کن.</div>';
+      return;
     }
-    return res.json();
-  }
+    bannersList.forEach(function (item, idx) {
+      var thumbUrl = (item.previewDataUrl) || item.existingUrl || '';
+      var row = document.createElement('div');
+      row.className = 'banner-row';
+      row.innerHTML =
+        '<div class="thumb-drop" style="' + (thumbUrl ? "background-image:url('" + thumbUrl + "')" : '') + '">' +
+          (thumbUrl ? '' : '📤 عکس') +
+          '<input type="file" accept="image/*">' +
+        '</div>' +
+        '<div class="fields">' +
+          '<input type="url" placeholder="لینک این بنر (اختیاری)" value="' + (item.linkUrl || '').replace(/"/g, '&quot;') + '">' +
+          '<div class="hint" style="margin-top:4px;">بنر شماره ' + (idx + 1) + '</div>' +
+        '</div>' +
+        '<div class="remove-btn">✕</div>';
 
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+      row.querySelector('input[type=file]').addEventListener('change', function (e) { bannerFileChange(item.id, e); });
+      row.querySelector('input[type=url]').addEventListener('input', function (e) { bannerLinkChange(item.id, e.target.value); });
+      row.querySelector('.remove-btn').addEventListener('click', function () { removeBannerRow(item.id); });
 
-  function showMsg(el, text, ok) {
-    el.textContent = text;
-    el.className = 'msg ' + (ok ? 'ok' : 'err');
-  }
-
-  // --- ورود ---
-  async function tryLogin() {
-    const t = $('tokenInput').value.trim();
-    if (!t) { showMsg($('loginMsg'), 'توکن رو وارد کن.', false); return; }
-    token = t;
-    $('loginBtn').disabled = true;
-    $('loginBtn').innerHTML = 'در حال بررسی... <span class="spinner"></span>';
-    try {
-      const cfg = await ghGetFile('banner-config.json');
-      const data = JSON.parse(decodeURIComponent(escape(atob(cfg.content))));
-      localStorage.setItem('w724_token', token);
-      fillForm(data);
-      $('loginScreen').classList.add('hidden');
-      $('panelScreen').classList.remove('hidden');
-    } catch (e) {
-      showMsg($('loginMsg'), 'توکن اشتباهه یا دسترسی نداره. متن خطا: ' + e.message, false);
-    } finally {
-      $('loginBtn').disabled = false;
-      $('loginBtn').textContent = 'ورود';
-    }
-  }
-
-  function fillForm(cfg) {
-    $('bannerEnabled').checked = !!cfg.enabled;
-
-    // سازگاری با نسخه‌ی قدیمی (تک‌بنر) و نسخه‌ی جدید (آرایه‌ی banners)
-    var banners = Array.isArray(cfg.banners) ? cfg.banners : [];
-    if (banners.length === 0 && cfg.imageUrl) {
-      banners = [{ imageUrl: cfg.imageUrl, linkUrl: cfg.linkUrl || '' }];
-    }
-    $('banner1Link').value = (banners[0] && banners[0].linkUrl) || '';
-    $('banner2Link').value = (banners[1] && banners[1].linkUrl) || '';
-    $('banner3Link').value = (banners[2] && banners[2].linkUrl) || '';
-    if (banners[0] && banners[0].imageUrl) { $('banner1Preview').src = banners[0].imageUrl; $('banner1Preview').style.display = 'block'; }
-    if (banners[1] && banners[1].imageUrl) { $('banner2Preview').src = banners[1].imageUrl; $('banner2Preview').style.display = 'block'; }
-    if (banners[2] && banners[2].imageUrl) { $('banner3Preview').src = banners[2].imageUrl; $('banner3Preview').style.display = 'block'; }
-
-    $('bgEnabled').checked = !!cfg.backgroundEnabled;
-    $('bgTheme').value = cfg.backgroundTheme === 'light' ? 'light' : 'dark';
-
-    var a = cfg.app || {};
-    $('primaryColor').value = a.primaryColor || '#59b139';
-    $('primaryColorDeep').value = a.primaryColorDeep || '#1c3e1d';
-    $('brandTitle').value = a.brandTitle || '';
-    $('brandSubtitle').value = a.brandSubtitle || '';
-    $('optionLabel').value = a.optionLabel || '';
-    $('optionCaption').value = a.optionCaption || '';
-    $('driverLabel').value = a.driverLabel || '';
-    $('driverCaption').value = a.driverCaption || '';
-    $('footerText').value = a.footerText || '';
-
-    $('partnersEnabled').checked = !!cfg.partnersEnabled;
-    $('partnersLabel').value = cfg.partnersLabel || '';
-    var partners = Array.isArray(cfg.partners) ? cfg.partners : [];
-    $('partner1Name').value = (partners[0] && partners[0].name) || '';
-    $('partner2Name').value = (partners[1] && partners[1].name) || '';
-    $('partner3Name').value = (partners[2] && partners[2].name) || '';
-    if (partners[0] && partners[0].imageUrl) { $('partner1Preview').src = partners[0].imageUrl; $('partner1Preview').style.display = 'block'; }
-    if (partners[1] && partners[1].imageUrl) { $('partner2Preview').src = partners[1].imageUrl; $('partner2Preview').style.display = 'block'; }
-    if (partners[2] && partners[2].imageUrl) { $('partner3Preview').src = partners[2].imageUrl; $('partner3Preview').style.display = 'block'; }
-  }
-
-  function previewFile(inputId, imgId) {
-    const input = $(inputId);
-    const img = $(imgId);
-    input.addEventListener('change', () => {
-      if (input.files && input.files[0]) {
-        img.src = URL.createObjectURL(input.files[0]);
-        img.style.display = 'block';
-      }
+      wrap.appendChild(row);
     });
   }
-  previewFile('banner1File', 'banner1Preview');
-  previewFile('banner2File', 'banner2Preview');
-  previewFile('banner3File', 'banner3Preview');
-  previewFile('bgFile', 'bgPreview');
-  previewFile('logoFile', 'logoPreview');
-  previewFile('partner1File', 'partner1Preview');
-  previewFile('partner2File', 'partner2Preview');
-  previewFile('partner3File', 'partner3Preview');
 
-  // --- ذخیره ---
-  async function saveChanges() {
-    const saveBtn = $('saveBtn');
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = 'در حال ذخیره... <span class="spinner"></span>';
-    try {
-      // خواندن تنظیمات فعلی برای نگه‌داشتن آدرس اسلایدهایی که عکس جدید براشون انتخاب نشده
-      const current = await ghGetFile('banner-config.json');
-      const currentCfg = JSON.parse(decodeURIComponent(escape(atob(current.content))));
-      let currentBanners = Array.isArray(currentCfg.banners) ? currentCfg.banners : [];
-      if (currentBanners.length === 0 && currentCfg.imageUrl) {
-        currentBanners = [{ imageUrl: currentCfg.imageUrl, linkUrl: currentCfg.linkUrl || '' }];
-      }
-
-      // آپلود هر کدام از ۳ اسلاید که عکس جدید براشون انتخاب شده
-      const slideFileNames = ['banner-slide-1.jpg', 'banner-slide-2.jpg', 'banner-slide-3.jpg'];
-      const slideInputs = ['banner1File', 'banner2File', 'banner3File'];
-      const slideLinkInputs = ['banner1Link', 'banner2Link', 'banner3Link'];
-      const newBanners = [];
-
-      for (let i = 0; i < 3; i++) {
-        const file = $(slideInputs[i]).files[0];
-        const linkVal = $(slideLinkInputs[i]).value.trim();
-        let imageUrl = (currentBanners[i] && currentBanners[i].imageUrl) || '';
-
-        if (file) {
-          const b64 = await fileToBase64(file);
-          let sha = null;
-          try { sha = (await ghGetFile(slideFileNames[i])).sha; } catch(e) {}
-          await ghPutFile(slideFileNames[i], b64, sha, `Update banner slide ${i+1} via panel`);
-          imageUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${slideFileNames[i]}`;
-        }
-
-        if (imageUrl) {
-          newBanners.push({ imageUrl: imageUrl, linkUrl: linkVal });
-        }
-      }
-
-      // آپلود عکس پس‌زمینه در صورت انتخاب
-      if ($('bgFile').files[0]) {
-        const b64 = await fileToBase64($('bgFile').files[0]);
-        let sha = null;
-        try { sha = (await ghGetFile('background.jpg')).sha; } catch(e) {}
-        await ghPutFile('background.jpg', b64, sha, 'Update background image via panel');
-      }
-      // آپلود لوگوی جدید در صورت انتخاب
-      let logoUrl = '';
-      if ($('logoFile').files[0]) {
-        const b64 = await fileToBase64($('logoFile').files[0]);
-        let sha = null;
-        try { sha = (await ghGetFile('custom-logo.png')).sha; } catch(e) {}
-        await ghPutFile('custom-logo.png', b64, sha, 'Update logo via panel');
-        logoUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/custom-logo.png`;
-      } else {
-        logoUrl = (currentCfg.app && currentCfg.app.logoUrl) || '';
-      }
-
-      // آپلود لوگوهای همکاران (تا ۳ عدد)
-      const currentPartners = Array.isArray(currentCfg.partners) ? currentCfg.partners : [];
-      const partnerFileNames = ['partner-1.png', 'partner-2.png', 'partner-3.png'];
-      const partnerInputs = ['partner1File', 'partner2File', 'partner3File'];
-      const partnerNameInputs = ['partner1Name', 'partner2Name', 'partner3Name'];
-      const newPartners = [];
-
-      for (let i = 0; i < 3; i++) {
-        const file = $(partnerInputs[i]).files[0];
-        const nameVal = $(partnerNameInputs[i]).value.trim();
-        let imageUrl = (currentPartners[i] && currentPartners[i].imageUrl) || '';
-
-        if (file) {
-          const b64 = await fileToBase64(file);
-          let sha = null;
-          try { sha = (await ghGetFile(partnerFileNames[i])).sha; } catch(e) {}
-          await ghPutFile(partnerFileNames[i], b64, sha, `Update partner logo ${i+1} via panel`);
-          imageUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${partnerFileNames[i]}`;
-        }
-
-        if (imageUrl) {
-          newPartners.push({ imageUrl: imageUrl, name: nameVal });
-        }
-      }
-
-      // به‌روزرسانی فایل تنظیمات
-      const newConfig = {
-        enabled: $('bannerEnabled').checked,
-        banners: newBanners,
-        alt: 'Waste724',
-        backgroundEnabled: $('bgEnabled').checked,
-        backgroundImageUrl: `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/background.jpg`,
-        backgroundTheme: $('bgTheme').value,
-        partnersEnabled: $('partnersEnabled').checked,
-        partnersLabel: $('partnersLabel').value.trim(),
-        partners: newPartners,
-        app: {
-          logoUrl: logoUrl,
-          primaryColor: $('primaryColor').value,
-          primaryColorDeep: $('primaryColorDeep').value,
-          brandTitle: $('brandTitle').value.trim(),
-          brandSubtitle: $('brandSubtitle').value.trim(),
-          optionLabel: $('optionLabel').value.trim(),
-          optionCaption: $('optionCaption').value.trim(),
-          driverLabel: $('driverLabel').value.trim(),
-          driverCaption: $('driverCaption').value.trim(),
-          footerText: $('footerText').value.trim()
-        }
-      };
-      const b64Config = btoa(unescape(encodeURIComponent(JSON.stringify(newConfig, null, 2))));
-      await ghPutFile('banner-config.json', b64Config, current.sha, 'Update app config via panel');
-
-      showMsg($('saveMsg'), '✅ ذخیره شد! ظرف چند دقیقه توی اپ اعمال می‌شه.', true);
-    } catch (e) {
-      showMsg($('saveMsg'), '❌ خطا: ' + e.message, false);
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'ذخیره‌ی تغییرات';
+  function renderPreview() {
+    if (document.getElementById('headerVisible').checked) {
+      document.getElementById('pvHeader').style.display = 'flex';
+    } else {
+      document.getElementById('pvHeader').style.display = 'none';
     }
+    if (document.getElementById('logoEnabled').checked && uploads.logo) {
+      document.getElementById('pvLogo').src = 'data:' + uploads.logo.mime + ';base64,' + uploads.logo.base64;
+    }
+    var firstBanner = bannersList[0];
+    if (firstBanner) {
+      var src = firstBanner.previewDataUrl || firstBanner.existingUrl;
+      if (src) document.getElementById('pvHero').style.backgroundImage = "url('" + src + "')";
+    }
+    var coopOn = document.getElementById('coopEnabled').checked;
+    document.getElementById('pvCoop').className = 'pv-coop' + (coopOn ? ' show' : '');
+    document.getElementById('pvCoopTitle').textContent = document.getElementById('coopTitle').value || 'همکاری با ما';
+    document.getElementById('pvCoopDesc').textContent = document.getElementById('coopDesc').value || '';
   }
 
-  $('loginBtn').addEventListener('click', tryLogin);
-  $('tokenInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
-  $('saveBtn').addEventListener('click', saveChanges);
-  $('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('w724_token');
-    token = '';
-    $('panelScreen').classList.add('hidden');
-    $('loginScreen').classList.remove('hidden');
-  });
+  // --- خواندن تنظیمات فعلی از گیت‌هاب ---
+  function loadConfig() {
+    showStatus('loadStatus', 'info', 'در حال خواندن...');
+    fetch(apiBase() + '/contents/' + fullPath('banner-config.json') + '?ref=' + document.getElementById('ghBranch').value, {
+      headers: authHeaders()
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('یافت نشد یا خطای دسترسی (کد ' + res.status + ')');
+        return res.json();
+      })
+      .then(function (data) {
+        var cfg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
 
-  // ورود خودکار اگه توکن قبلاً ذخیره شده
-  if (token) {
-    $('tokenInput').value = token;
-    tryLogin();
+        bannersList = [];
+        if (Array.isArray(cfg.banners)) {
+          cfg.banners.forEach(function (b) { addBannerRow(b); });
+        } else if (cfg.enabled === true && cfg.imageUrl) {
+          // سازگاری با نسخه‌ی قدیمی (تک‌بنر)
+          addBannerRow({ imageUrl: cfg.imageUrl, linkUrl: cfg.linkUrl });
+        } else {
+          renderBannerList();
+        }
+
+        document.getElementById('headerVisible').checked = cfg.headerVisible !== false;
+        document.getElementById('logoEnabled').checked = !!cfg.logoEnabled;
+        if (cfg.cooperate) {
+          document.getElementById('coopEnabled').checked = !!cfg.cooperate.enabled;
+          document.getElementById('coopTitle').value = cfg.cooperate.title || 'همکاری با ما';
+          document.getElementById('coopDesc').value = cfg.cooperate.desc || '';
+          document.getElementById('coopLink').value = cfg.cooperate.link || '';
+        }
+        renderPreview();
+        showStatus('loadStatus', 'ok', '✓ تنظیمات فعلی با موفقیت خوانده شد.');
+      })
+      .catch(function (err) {
+        showStatus('loadStatus', 'err', '✗ ' + err.message + '\nاگر اولین‌بار است، مشکلی نیست — می‌توانید مستقیم فرم را پر کرده و ذخیره کنید.');
+      });
   }
+
+  // --- آپلود یک فایل به گیت‌هاب (ساخت یا به‌روزرسانی) ---
+  function putFile(path, base64Content, message) {
+    var branch = document.getElementById('ghBranch').value;
+    return fetch(apiBase() + '/contents/' + path + '?ref=' + branch, { headers: authHeaders() })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (existing) {
+        var body = {
+          message: message,
+          content: base64Content,
+          branch: branch
+        };
+        if (existing && existing.sha) body.sha = existing.sha;
+        return fetch(apiBase() + '/contents/' + path, {
+          method: 'PUT',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function (res) {
+        if (!res.ok) {
+          return res.json().then(function (e) { throw new Error(path + ': ' + (e.message || res.status)); });
+        }
+        return res.json();
+      });
+  }
+
+  function b64Utf8(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  function rawBaseUrl() {
+    return 'https://raw.githubusercontent.com/' + document.getElementById('ghOwner').value.trim() +
+      '/' + document.getElementById('ghRepo').value.trim() + '/' + document.getElementById('ghBranch').value.trim() + '/';
+  }
+
+  // --- ذخیره کامل ---
+  function saveAll() {
+    var token = document.getElementById('ghToken').value.trim();
+    if (!token) {
+      showStatus('saveStatus', 'err', '✗ لطفاً ابتدا GitHub Token را وارد کنید.');
+      return;
+    }
+    var btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    showStatus('saveStatus', 'info', 'در حال ذخیره‌سازی...');
+
+    var tasks = [];
+    var bannerResults = new Array(bannersList.length);
+
+    bannersList.forEach(function (item, idx) {
+      if (item.file) {
+        var path = fullPath('banner-' + (idx + 1) + '.' + extFromMime(item.file.mime));
+        tasks.push(
+          putFile(path, item.file.base64, 'به‌روزرسانی بنر ' + (idx + 1) + ' از پنل مدیریت')
+            .then(function () { bannerResults[idx] = { imageUrl: rawBaseUrl() + path, linkUrl: item.linkUrl }; })
+        );
+      } else if (item.existingUrl) {
+        bannerResults[idx] = { imageUrl: item.existingUrl, linkUrl: item.linkUrl };
+      }
+    });
+
+    if (uploads.logo) {
+      tasks.push(putFile(fullPath('logo.png'), uploads.logo.base64, 'به‌روزرسانی لوگو از پنل مدیریت'));
+    }
+
+    Promise.all(tasks)
+      .then(function () {
+        var cfg = {
+          banners: bannerResults.filter(function (b) { return b; }),
+
+          logoEnabled: document.getElementById('logoEnabled').checked,
+          logoUrl: rawBaseUrl() + fullPath('logo.png'),
+          headerVisible: document.getElementById('headerVisible').checked,
+
+          cooperate: {
+            enabled: document.getElementById('coopEnabled').checked,
+            title: document.getElementById('coopTitle').value.trim(),
+            desc: document.getElementById('coopDesc').value.trim(),
+            link: document.getElementById('coopLink').value.trim()
+          },
+
+          backgroundEnabled: false,
+          backgroundImageUrl: rawBaseUrl() + fullPath('background.jpg')
+        };
+        return putFile(fullPath('banner-config.json'), b64Utf8(JSON.stringify(cfg, null, 2)), 'به‌روزرسانی تنظیمات صفحه اول از پنل مدیریت');
+      })
+      .then(function () {
+        showStatus('saveStatus', 'ok', '✓ با موفقیت ذخیره شد. اپ در باز شدن بعدی این تغییرات را نشان می‌دهد (ممکن است چند دقیقه طول بکشد تا کش گیت‌هاب/CDN به‌روزرسانی شود).');
+      })
+      .catch(function (err) {
+        showStatus('saveStatus', 'err', '✗ خطا: ' + err.message);
+      })
+      .finally(function () {
+        btn.disabled = false;
+      });
+  }
+
+  renderBannerList();
+  renderPreview();
 </script>
 </body>
 </html>
